@@ -85,6 +85,9 @@ PLATFORM_NAME = platform.node()
 # system time zone.
 TIME_ZONE = 'US/Pacific'
 
+# Make use of the timezone for datetime objects from the database
+USE_TZ = True
+
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
 LANGUAGE_CODE = 'en-US'
