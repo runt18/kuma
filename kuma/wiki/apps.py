@@ -135,9 +135,9 @@ class WikiConfig(AppConfig):
     def on_document_spam_attempt_save(self, sender, instance, **kwargs):
         subject = u'[MDN] Wiki spam attempt recorded'
         if instance.document:
-            subject = u'%s for document %s' % (subject, instance.document)
+            subject = u'{0!s} for document {1!s}'.format(subject, instance.document)
         elif instance.title:
-            subject = u'%s with title %s' % (subject, instance.title)
+            subject = u'{0!s} with title {1!s}'.format(subject, instance.title)
         body = render_to_string('wiki/email/spam.ltxt',
                                 {'spam_attempt': instance})
         send_mail(subject, body, settings.DEFAULT_FROM_EMAIL,

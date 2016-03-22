@@ -56,7 +56,7 @@ def paginate(request, queryset, per_page=20):
 
     qsa = urlencode(items)
 
-    paginated.url = u'%s?%s' % (base, qsa)
+    paginated.url = u'{0!s}?{1!s}'.format(base, qsa)
     return paginated
 
 
@@ -118,7 +118,7 @@ class MemcacheLockException(Exception):
 
 class MemcacheLock(object):
     def __init__(self, key, attempts=1, expires=60 * 60 * 3):
-        self.key = 'lock_%s' % key
+        self.key = 'lock_{0!s}'.format(key)
         self.attempts = attempts
         self.expires = expires
         self.cache = memcache
@@ -139,7 +139,7 @@ class MemcacheLock(object):
                 logging.debug('Sleeping for %s while trying to acquire key %s',
                               sleep_time, self.key)
                 time.sleep(sleep_time)
-        raise MemcacheLockException('Could not acquire lock for %s' % self.key)
+        raise MemcacheLockException('Could not acquire lock for {0!s}'.format(self.key))
 
     def release(self):
         self.cache.delete(self.key)
@@ -156,13 +156,13 @@ def memcache_lock(prefix, expires=60 * 60):
             name = '_'.join((prefix, func.__name__) + args)
             lock = MemcacheLock(name, expires=expires)
             if lock.locked():
-                log.warning('Lock %s locked; ignoring call.' % name)
+                log.warning('Lock {0!s} locked; ignoring call.'.format(name))
                 return
             try:
                 # Try to acquire the lock without blocking.
                 lock.acquire()
             except MemcacheLockException:
-                log.warning('Aborting %s; lock acquisition failed.' % name)
+                log.warning('Aborting {0!s}; lock acquisition failed.'.format(name))
                 return
             else:
                 # We have the lock, call the function.

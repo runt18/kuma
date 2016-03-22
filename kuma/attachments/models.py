@@ -70,8 +70,8 @@ class Attachment(models.Model):
         """
         rev = self.current_revision
         t = select_template([
-            'attachments/attachments/%s.html' % rev.mime_type.replace('/', '_'),
-            'attachments/attachments/%s.html' % rev.mime_type.split('/')[0],
+            'attachments/attachments/{0!s}.html'.format(rev.mime_type.replace('/', '_')),
+            'attachments/attachments/{0!s}.html'.format(rev.mime_type.split('/')[0]),
             'attachments/attachments/generic.html'])
         return t.render({'attachment': rev})
 

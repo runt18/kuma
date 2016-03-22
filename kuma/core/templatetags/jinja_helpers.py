@@ -157,7 +157,7 @@ def entity_decode(str):
 
 @library.global_function
 def page_title(title):
-    return u'%s | MDN' % title
+    return u'{0!s} | MDN'.format(title)
 
 
 @library.filter
@@ -314,8 +314,7 @@ def datetimeformat(context, value, format='shortdatetime', output='html'):
 
     if output == 'json':
         return formatted
-    return jinja2.Markup('<time datetime="%s">%s</time>' %
-                         (tzvalue.isoformat(), formatted))
+    return jinja2.Markup('<time datetime="{0!s}">{1!s}</time>'.format(tzvalue.isoformat(), formatted))
 
 
 @library.global_function

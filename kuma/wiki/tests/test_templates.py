@@ -80,7 +80,7 @@ class DocumentTests(UserTestCase, WikiTestCase):
         eq_(200, response.status_code)
         doc = pq(response.content)
         eq_(d2.title, doc('main#content div.document-head h1').text())
-        crumbs = "MDN %s %s" % (d1.title, d2.title)
+        crumbs = "MDN {0!s} {1!s}".format(d1.title, d2.title)
         eq_(crumbs, doc('nav.crumbs').text())
 
     def test_english_document_no_approved_content(self):
@@ -251,9 +251,9 @@ class RevisionTests(UserTestCase, WikiTestCase):
         response = self.client.get(url)
         eq_(200, response.status_code)
         doc = pq(response.content)
-        eq_('Revision id: %s' % r.id,
+        eq_('Revision id: {0!s}'.format(r.id),
             doc('div.revision-info li.revision-id').text())
-        eq_('Revision %s of %s' % (r.id, d.title), doc('h1').text())
+        eq_('Revision {0!s} of {1!s}'.format(r.id, d.title), doc('h1').text())
         eq_(r.content,
             doc('#doc-source pre').text())
         eq_('Created: Jan 1, 2011, 12:00:00 AM',
@@ -320,7 +320,7 @@ class NewDocumentTests(UserTestCase, WikiTestCase):
         response = self.client.post(reverse('wiki.create'), data,
                                     follow=True)
         d = Document.objects.get(title=data['title'])
-        eq_([('http://testserver/en-US/docs/%s' % d.slug, 302)],
+        eq_([('http://testserver/en-US/docs/{0!s}'.format(d.slug), 302)],
             response.redirect_chain)
         eq_(settings.WIKI_DEFAULT_LANGUAGE, d.locale)
         eq_(tags, sorted(t.name for t in d.tags.all()))
@@ -390,7 +390,7 @@ class NewDocumentTests(UserTestCase, WikiTestCase):
         d = _create_document()
         self.client.login(username='admin', password='testpass')
         data = new_document_data()
-        data['slug'] = '%s-once-more-with-feeling' % d.slug
+        data['slug'] = '{0!s}-once-more-with-feeling'.format(d.slug)
         response = self.client.post(reverse('wiki.create'), data)
         eq_(302, response.status_code)
 
@@ -492,20 +492,20 @@ class NewRevisionTests(UserTestCase, WikiTestCase):
         eq_(2, len(mail.outbox))
         first_edit_email = mail.outbox[0]
         expected_to = [config.EMAIL_LIST_FOR_FIRST_EDITS]
-        expected_subject = u'[MDN] %(username)s made their first edit, to: %(title)s' % ({'username': new_rev.creator.username, 'title': self.d.title})
+        expected_subject = u'[MDN] {username!s} made their first edit, to: {title!s}'.format(**({'username': new_rev.creator.username, 'title': self.d.title}))
         eq_(expected_subject, first_edit_email.subject)
         eq_(expected_to, first_edit_email.to)
 
         edited_email = mail.outbox[1]
         expected_to = [u'sam@example.com']
-        expected_subject = u'[MDN] Page "%s" changed by %s' % (self.d.title,
+        expected_subject = u'[MDN] Page "{0!s}" changed by {1!s}'.format(self.d.title,
                                                                new_rev.creator)
         eq_(expected_subject, edited_email.subject)
         eq_(expected_to, edited_email.to)
-        ok_('%s changed %s.' % (unicode(self.username), unicode(self.d.title))
+        ok_('{0!s} changed {1!s}.'.format(unicode(self.username), unicode(self.d.title))
             in edited_email.body)
-        ok_(u'https://testserver/en-US/docs/%s$history?utm_campaign=' %
-            self.d.slug
+        ok_(u'https://testserver/en-US/docs/{0!s}$history?utm_campaign='.format(
+            self.d.slug)
             in edited_email.body)
 
     @mock.patch.object(EditDocumentEvent, 'fire')
@@ -783,7 +783,7 @@ class TranslateTests(UserTestCase, WikiTestCase):
         translate_uri = reverse('wiki.translate',
                                 locale='en-US',
                                 args=[self.d.slug])
-        return '%s?tolocale=%s' % (translate_uri, 'es')
+        return '{0!s}?tolocale={1!s}'.format(translate_uri, 'es')
 
     def test_translate_GET_logged_out(self):
         """Try to create a translation while logged out."""
@@ -791,7 +791,7 @@ class TranslateTests(UserTestCase, WikiTestCase):
         translate_uri = self._translate_uri()
         response = self.client.get(translate_uri)
         eq_(302, response.status_code)
-        expected_url = '%s?next=%s' % (reverse('account_login', locale='en-US'),
+        expected_url = '{0!s}?next={1!s}'.format(reverse('account_login', locale='en-US'),
                                        urlquote(translate_uri))
         ok_(expected_url in response['Location'])
 

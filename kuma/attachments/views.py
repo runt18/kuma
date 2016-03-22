@@ -57,7 +57,7 @@ def raw_file(request, attachment_id, filename):
         response = StreamingHttpResponse(rev.file, content_type=rev.mime_type)
         response['Last-Modified'] = convert_to_http_date(rev.created)
         response['Content-Length'] = rev.file.size
-        response['X-Frame-Options'] = 'ALLOW-FROM: %s' % settings.DOMAIN
+        response['X-Frame-Options'] = 'ALLOW-FROM: {0!s}'.format(settings.DOMAIN)
         return response
     else:
         return HttpResponsePermanentRedirect(attachment.get_file_url())

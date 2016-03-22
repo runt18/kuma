@@ -37,7 +37,7 @@ class Key(models.Model):
     created = models.DateTimeField(auto_now_add=True)
 
     def __unicode__(self):
-        return '<Key %s %s>' % (self.user, self.key)
+        return '<Key {0!s} {1!s}>'.format(self.user, self.key)
 
     def generate_secret(self):
         self.key = generate_key()

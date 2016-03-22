@@ -96,7 +96,7 @@ class KeyViewsTest(RefetchingUserTestCase):
         page = pq(resp.content)
 
         for ct, key in ((1, self.key1), (1, self.key2), (0, self.key3)):
-            key_row = page.find('.option-list #key-%s' % key.pk)
+            key_row = page.find('.option-list #key-{0!s}'.format(key.pk))
             eq_(ct, key_row.length)
             if ct > 0:
                 eq_(key.description, key_row.find('.description').text())
@@ -105,7 +105,7 @@ class KeyViewsTest(RefetchingUserTestCase):
         # Assemble some sample log lines
         log_lines = []
         for i in range(0, ITEMS_PER_PAGE * 2):
-            log_lines.append(('ping', self.user2, 'Number #%s' % i))
+            log_lines.append(('ping', self.user2, 'Number #{0!s}'.format(i)))
 
         # Record the log lines for this key
         for l in log_lines:
@@ -116,7 +116,7 @@ class KeyViewsTest(RefetchingUserTestCase):
 
         # Iterate through 2 expected pages...
         for qs, offset in (('', 0), ('?page=2', ITEMS_PER_PAGE)):
-            url = '%s%s' % (reverse('authkeys.history', args=(self.key1.pk,),
+            url = '{0!s}{1!s}'.format(reverse('authkeys.history', args=(self.key1.pk,),
                                     locale='en-US'), qs)
             resp = self.client.get(url)
             eq_(200, resp.status_code)
@@ -130,7 +130,7 @@ class KeyViewsTest(RefetchingUserTestCase):
                         row.find('.object').text(),
                         row.find('.notes').text())
                 eq_(expected[0], line[0])
-                ok_('%s' % expected[1] in line[1])
+                ok_('{0!s}'.format(expected[1]) in line[1])
                 eq_(expected[2], line[2])
 
     def test_delete_key(self):

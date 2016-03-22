@@ -41,11 +41,11 @@ def mindtouch_namespace_redirect(request, namespace, slug):
         # simplifies figuring out where to send them.
         locale, _, doc_slug = slug.partition('/')
         new_locale = settings.MT_TO_KUMA_LOCALE_MAP.get(locale, 'en-US')
-        new_slug = '%s:%s' % (namespace, doc_slug)
+        new_slug = '{0!s}:{1!s}'.format(namespace, doc_slug)
     elif namespace == 'User':
         # For users, we look up the latest revision and get the locale
         # from there.
-        new_slug = '%s:%s' % (namespace, slug)
+        new_slug = '{0!s}:{1!s}'.format(namespace, slug)
         try:
             rev = (Revision.objects.filter(document__slug=new_slug)
                                    .latest('created'))
@@ -57,9 +57,9 @@ def mindtouch_namespace_redirect(request, namespace, slug):
         # Templates, etc. don't actually have a locale, so we give
         # them the default.
         new_locale = 'en-US'
-        new_slug = '%s:%s' % (namespace, slug)
+        new_slug = '{0!s}:{1!s}'.format(namespace, slug)
     if new_locale:
-        new_url = '/%s/docs/%s' % (request.LANGUAGE_CODE, new_slug)
+        new_url = '/{0!s}/docs/{1!s}'.format(request.LANGUAGE_CODE, new_slug)
     return redirect(new_url, permanent=True)
 
 
@@ -98,9 +98,9 @@ def mindtouch_to_kuma_redirect(request, path):
             # anyone trying to view the document in its locale with
             # their own UI locale will have the correct starting URL
             # anyway.
-            new_url = '/%s/docs/%s' % (new_locale, slug)
+            new_url = '/{0!s}/docs/{1!s}'.format(new_locale, slug)
             if 'view' in request.GET:
-                new_url = '%s$%s' % (new_url, request.GET['view'])
+                new_url = '{0!s}${1!s}'.format(new_url, request.GET['view'])
             return redirect(new_url, permanent=True)
 
         # Next we try looking up a Document with the possible locale
@@ -119,6 +119,6 @@ def mindtouch_to_kuma_redirect(request, path):
 
     location = doc.get_absolute_url()
     if 'view' in request.GET:
-        location = '%s$%s' % (location, request.GET['view'])
+        location = '{0!s}${1!s}'.format(location, request.GET['view'])
 
     return redirect(location, permanent=True)

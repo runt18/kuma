@@ -169,8 +169,8 @@ class UserViewsTest(UserTestCase):
         """A non-numeric page number should not cause an error"""
         testuser = self.user_model.objects.get(username='testuser')
 
-        url = '%s?page=asdf' % reverse('users.user_detail',
-                                       args=(testuser.username,))
+        url = '{0!s}?page=asdf'.format(reverse('users.user_detail',
+                                       args=(testuser.username,)))
 
         try:
             self.client.get(url, follow=True)
@@ -304,7 +304,7 @@ class UserViewsTest(UserTestCase):
         form = self._get_current_form_field_values(doc)
 
         # Fill out the form with websites.
-        form.update(dict(('user-%s_url' % k, v)
+        form.update(dict(('user-{0!s}_url'.format(k), v)
                          for k, v in test_sites.items()))
 
         # Submit the form, verify redirect to user detail
@@ -316,7 +316,7 @@ class UserViewsTest(UserTestCase):
 
         # Verify the websites are saved in the user.
         for site, url in test_sites.items():
-            url_attr_name = '%s_url' % site
+            url_attr_name = '{0!s}_url'.format(site)
             eq_(getattr(testuser, url_attr_name), url)
 
         # Verify the saved websites appear in the editing form
@@ -324,7 +324,7 @@ class UserViewsTest(UserTestCase):
         response = self.client.get(url, follow=True)
         doc = pq(response.content)
         for k, v in test_sites.items():
-            eq_(v, doc.find('#user-edit *[name="user-%s_url"]' % k).val())
+            eq_(v, doc.find('#user-edit *[name="user-{0!s}_url"]'.format(k)).val())
 
         # Come up with some bad sites, either invalid URL or bad URL prefix
         bad_sites = {
@@ -332,7 +332,7 @@ class UserViewsTest(UserTestCase):
             'twitter': 'http://facebook.com/lmorchard',
             'stackoverflow': 'http://overqueueblah.com/users/lmorchard',
         }
-        form.update(dict(('user-%s_url' % k, v)
+        form.update(dict(('user-{0!s}_url'.format(k), v)
                          for k, v in bad_sites.items()))
 
         # Submit the form, verify errors for all of the bad sites
@@ -447,7 +447,7 @@ class UserViewsTest(UserTestCase):
             # if label is localized it's a lazy proxy object
             ok_(not isinstance(
                 response.context['user_form'].fields[field].label, basestring),
-                'Field %s is a string!' % field)
+                'Field {0!s} is a string!'.format(field))
 
     def test_bug_1174804(self):
         """Test that the newsletter form field are safely rendered"""
@@ -577,7 +577,7 @@ class AllauthPersonaTestCase(UserTestCase):
             response = self.client.post(reverse('persona_login'),
                                         data={'next': doc_url},
                                         follow=True)
-            ok_(('http://testserver%s' % doc_url, 302) in response.redirect_chain)
+            ok_(('http://testserver{0!s}'.format(doc_url), 302) in response.redirect_chain)
 
     def test_persona_signup_create_django_user(self):
         """
@@ -711,10 +711,10 @@ class KumaGitHubTests(UserTestCase):
         rt = ''
         if with_refresh_token:
             rt = ',"refresh_token": "testrf"'
-        return """{
+        return """{{
             "uid":"weibo",
             "access_token":"testac"
-            %s }""" % rt
+            {0!s} }}""".format(rt)
 
     def setUp(self):
         self.signup_url = reverse('socialaccount_signup',

@@ -19,9 +19,9 @@ class AttachmentsFeed(DocumentsFeed):
 
     def item_description(self, item):
         if item.get_previous() is None:
-            return '<p>Created by: %s</p>' % item.creator.username
+            return '<p>Created by: {0!s}</p>'.format(item.creator.username)
         else:
-            return '<p>Edited by %s: %s' % (item.creator.username,
+            return '<p>Edited by {0!s}: {1!s}'.format(item.creator.username,
                                             item.comment)
 
     def item_link(self, item):

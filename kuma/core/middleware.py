@@ -41,7 +41,7 @@ class LocaleURLMiddleware(object):
             full_path = urllib.quote(full_path.encode('utf-8'))
 
             if query_string:
-                full_path = '%s?%s' % (full_path, query_string)
+                full_path = '{0!s}?{1!s}'.format(full_path, query_string)
 
             response = HttpResponsePermanentRedirect(full_path)
 

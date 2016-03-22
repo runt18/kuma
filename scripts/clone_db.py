@@ -122,7 +122,7 @@ class NotFound(Exception):
 
 def sysprint(command):
     """ Helper to print all system commands in debug mode """
-    print_debug("command: %s" % command)
+    print_debug("command: {0!s}".format(command))
     output = subprocess.check_output(
         command, shell=True, stderr=subprocess.STDOUT)
     for line in output.splitlines():
@@ -140,26 +140,26 @@ def main():
     now = datetime.now().strftime('%Y%m%d')
 
     usage = """\
-        %%prog [options] DB_NAME
+        %prog [options] DB_NAME
 
         Performs the steps needed to produce an anonymized DB dump.
 
         Examples:
 
-        %%prog mdn_prod
+        %prog mdn_prod
             Connect to 127.0.0.1 as root, no password.
             Dump "mdn_prod", import to temporary table.
-            Produce mdn_prod-anon-%(now)s.sql.gz
+            Produce mdn_prod-anon-{now!s}.sql.gz
             Both the temporary table and the input dump are deleted.
 
-        %%prog -i downloaded-dump.sql.gz
+        %prog -i downloaded-dump.sql.gz
             Connect to 127.0.0.1 as root, no password.
             Import downloaded-dump.sql.gz.
-            Produce mdn_prod-anon-%(now)s.sql.gz
+            Produce mdn_prod-anon-{now!s}.sql.gz
             Input dump is not deleted.
-    """ % dict(
+    """.format(**dict(
         now=now
-    )
+    ))
     options = OptionParser(dedent(usage.rstrip()))
 
     options.add_option('-u', '--user',
@@ -217,54 +217,54 @@ def main():
 
     base_dir = os.path.dirname(__file__)
 
-    mysql_conn = '-u%(user)s %(password)s -h%(host)s' % dict(
+    mysql_conn = '-u{user!s} {password!s} -h{host!s}'.format(**dict(
         user=opts.user,
-        password=opts.password and ('-p%s' % opts.password) or '',
+        password=opts.password and ('-p{0!s}'.format(opts.password)) or '',
         host=opts.host,
-    )
+    ))
     if opts.socket:
-        mysql_conn = '-u%(user)s %(password)s -S%(socket)s' % dict(
+        mysql_conn = '-u{user!s} {password!s} -S{socket!s}'.format(**dict(
             user=opts.user,
-             password=opts.password and ('-p%s' % opts.password) or '',
+             password=opts.password and ('-p{0!s}'.format(opts.password)) or '',
              socket=opts.socket,
-        )
+        ))
     else:
-        mysql_conn = '-u%(user)s %(password)s -h%(host)s' % dict(
+        mysql_conn = '-u{user!s} {password!s} -h{host!s}'.format(**dict(
             user=opts.user,
-            password=opts.password and ('-p%s' % opts.password) or '',
+            password=opts.password and ('-p{0!s}'.format(opts.password)) or '',
             host=opts.host,
-        )
+        ))
 
     if opts.input:
         input_dump_fn = opts.input
     else:
-        input_dump_fn = '%s-%s.sql.gz' % (input_db, now)
+        input_dump_fn = '{0!s}-{1!s}.sql.gz'.format(input_db, now)
 
-    output_dump_fn = '%s-anon-%s.sql.gz' % (input_db, now)
+    output_dump_fn = '{0!s}-anon-{1!s}.sql.gz'.format(input_db, now)
 
     # TODO: replace dump, create, import with mysqldbcopy
     # https://dev.mysql.com/doc/mysql-utilities/1.3/en/mysqldbcopy.html
     if not opts.skip_input_dump and not opts.input:
-        print_info("Dumping input DB to %s" % input_dump_fn)
+        print_info("Dumping input DB to {0!s}".format(input_dump_fn))
         dump_cmd = ('mysqldump %(mysql_conn)s %(input_db)s %(tables)s | '
                     'gzip > %(input_dump_fn)s' % dict(
             mysql_conn=mysql_conn,
             input_db=input_db, tables=' '.join(TABLES_TO_DUMP),
             input_dump_fn=input_dump_fn
         ))
-        print_debug('\t%s' % dump_cmd)
+        print_debug('\t{0!s}'.format(dump_cmd))
         sysprint(dump_cmd)
 
-    temp_db = '%s_anontmp_%s' % (input_db, now)
+    temp_db = '{0!s}_anontmp_{1!s}'.format(input_db, now)
 
     if not opts.skip_temp_create:
-        print_info('Creating temporary DB %s' % temp_db)
+        print_info('Creating temporary DB {0!s}'.format(temp_db))
         sysprint(('mysql %(mysql_conn)s -e'
                   '"DROP DATABASE IF EXISTS %(temp_db)s;"') %
                   dict(mysql_conn=mysql_conn, temp_db=temp_db))
 
-        sysprint('mysqladmin %(mysql_conn)s create %(temp_db)s' %
-                  dict(mysql_conn=mysql_conn, temp_db=temp_db))
+        sysprint('mysqladmin {mysql_conn!s} create {temp_db!s}'.format(**
+                  dict(mysql_conn=mysql_conn, temp_db=temp_db)))
 
     if not opts.skip_temp_import:
         print_info('Importing the input dump into the temporary DB')
@@ -276,7 +276,7 @@ def main():
 
     if not opts.skip_anonymize:
         anon_sql_fn = os.path.join(base_dir, 'anonymize.sql')
-        print_info('Applying %s to the temporary DB' % anon_sql_fn)
+        print_info('Applying {0!s} to the temporary DB'.format(anon_sql_fn))
         sysprint('cat %(anon_sql_fn)s | mysql %(mysql_conn)s '
                   '%(temp_db)s' % dict(
             anon_sql_fn=anon_sql_fn, mysql_conn=mysql_conn,
@@ -284,22 +284,22 @@ def main():
         ))
 
     if not opts.skip_output_dump:
-        print_info("Dumping temporary DB to %s" % output_dump_fn)
+        print_info("Dumping temporary DB to {0!s}".format(output_dump_fn))
         dump_cmd = ('mysqldump %(mysql_conn)s %(temp_db)s | '
                     'gzip > %(output_dump_fn)s' % dict(
             mysql_conn=mysql_conn, temp_db=temp_db,
             output_dump_fn=output_dump_fn
         ))
-        print_debug('\t%s' % dump_cmd)
+        print_debug('\t{0!s}'.format(dump_cmd))
         sysprint(dump_cmd)
 
     if not opts.skip_drop_temp_db:
-        print_info("Dropping temporary db %s" % temp_db)
-        sysprint('mysqladmin %(mysql_conn)s -f drop %(temp_db)s' %
-                  dict(mysql_conn=mysql_conn, temp_db=temp_db))
+        print_info("Dropping temporary db {0!s}".format(temp_db))
+        sysprint('mysqladmin {mysql_conn!s} -f drop {temp_db!s}'.format(**
+                  dict(mysql_conn=mysql_conn, temp_db=temp_db)))
 
     if not opts.skip_delete_input and not opts.input:
-        print_info('Deleting input DB dump %s' % input_dump_fn)
+        print_info('Deleting input DB dump {0!s}'.format(input_dump_fn))
         os.remove(input_dump_fn)
 
 
@@ -313,10 +313,10 @@ if __name__ == '__main__':
             error = "Command was terminated by signal"
             retcode = -e.retcode
         else:
-            error = "Command errored with code %s" % e.retcode
+            error = "Command errored with code {0!s}".format(e.retcode)
             retcode = e.retcode
     except (NotFound, OSError) as e:
-        error = "Command failed: %s" % e
+        error = "Command failed: {0!s}".format(e)
         retcode = 127
     if error:
         print >>sys.stderr, error

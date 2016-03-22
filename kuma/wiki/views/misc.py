@@ -108,7 +108,7 @@ def load_documents(request):
                 messages.add_message(request, messages.INFO, user_msg)
             except Exception as e:
                 err_msg = (ugettext('Failed to import data: %(error)s') %
-                           {'error': '%s' % e, })
+                           {'error': '{0!s}'.format(e), })
                 messages.add_message(request, messages.ERROR, err_msg)
 
     context = {'import_file_form': form}

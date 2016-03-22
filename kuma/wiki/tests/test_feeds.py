@@ -50,9 +50,9 @@ class FeedTests(UserTestCase, WikiTestCase):
         self.assertEqual(1, len(feed.find('item')))
         for i, item in enumerate(feed.find('item')):
             desc_text = pq(item).find('description').text()
-            compare_url = '%s$compare?to=%s&from=%s&utm_campaign=feed' % (
+            compare_url = '{0!s}$compare?to={1!s}&from={2!s}&utm_campaign=feed'.format(
                 d1.slug, d1.current_revision.id, first_rev_id)
-            edit_url = '%s$edit?utm_campaign=feed&utm_medium=rss' % d2.slug
+            edit_url = '{0!s}$edit?utm_campaign=feed&utm_medium=rss'.format(d2.slug)
             self.assertTrue(escape(compare_url) in desc_text)
             self.assertTrue(escape(edit_url) in desc_text)
 
@@ -65,8 +65,8 @@ class FeedTests(UserTestCase, WikiTestCase):
             revision(save=True,
                      document=d,
                      title='HTML9',
-                     comment='Revision %s' % i,
-                     content="Some Content %s" % i,
+                     comment='Revision {0!s}'.format(i),
+                     content="Some Content {0!s}".format(i),
                      is_approved=True,
                      created=created)
 
@@ -114,16 +114,16 @@ class FeedTests(UserTestCase, WikiTestCase):
             revision(save=True,
                      document=d,
                      title='HTML9',
-                     comment='Revision %s' % i,
-                     content="Some Content %s" % i,
+                     comment='Revision {0!s}'.format(i),
+                     content="Some Content {0!s}".format(i),
                      is_approved=True,
                      created=created)
 
-        resp = self.client.get('%s?all_locales' %
+        resp = self.client.get('{0!s}?all_locales'.format(
                                reverse('wiki.feeds.recent_revisions',
                                        args=(),
                                        kwargs={'format': 'rss'},
-                                       locale='en-US'))
+                                       locale='en-US')))
         self.assertEqual(200, resp.status_code)
         feed = pq(resp.content)
         self.assertEqual(5, len(feed.find('item')))
@@ -253,7 +253,7 @@ class FeedTests(UserTestCase, WikiTestCase):
                 )
                 for feed_url in feed_urls:
                     if show_all:
-                        feed_url = '%s?all_locales' % feed_url
+                        feed_url = '{0!s}?all_locales'.format(feed_url)
                     resp = self.client.get(feed_url)
                     data = json.loads(resp.content)
                     if show_all:

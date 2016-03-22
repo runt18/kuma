@@ -50,7 +50,7 @@ class KumaAccountAdapter(DefaultAccountAdapter):
         return username
 
     def message_templates(self, *names):
-        return tuple('messages/%s.txt' % name for name in names)
+        return tuple('messages/{0!s}.txt'.format(name) for name in names)
 
     def add_message(self, request, level, message_template,
                     message_context={}, extra_tags='', *args, **kwargs):

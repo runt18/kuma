@@ -37,7 +37,7 @@ def full_attachment_url(attachment_id, filename):
         'attachment_id': attachment_id,
         'filename': filename,
     })
-    return '%s%s%s' % (settings.PROTOCOL, settings.ATTACHMENT_HOST, path)
+    return '{0!s}{1!s}{2!s}'.format(settings.PROTOCOL, settings.ATTACHMENT_HOST, path)
 
 
 def convert_to_http_date(dt):
@@ -71,12 +71,12 @@ def attachment_upload_to(instance, filename):
     # The md5 hash here is of the full timestamp, down to the
     # microsecond, of when the path is generated.
     now = datetime.now()
-    return "attachments/%(date)s/%(id)s/%(md5)s/%(filename)s" % {
+    return "attachments/{date!s}/{id!s}/{md5!s}/{filename!s}".format(**{
         'date': now.strftime('%Y/%m/%d'),
         'id': instance.attachment.id,
         'md5': hashlib.md5(str(now)).hexdigest(),
         'filename': filename
-    }
+    })
 
 
 def attachments_payload(attachments):

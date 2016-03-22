@@ -112,7 +112,7 @@ class _NamespacedTaggableManager(_TaggableManager):
         """
         if (':' in tag.name):
             (ns, name) = tag.name.rsplit(':', 1)
-            return ('%s:' % ns, name)
+            return ('{0!s}:'.format(ns), name)
         else:
             return ('', tag.name)
 
@@ -121,7 +121,7 @@ class _NamespacedTaggableManager(_TaggableManager):
         ns_tags = []
         for t in tags:
             if not t.startswith(namespace):
-                t = '%s%s' % (namespace, t)
+                t = '{0!s}{1!s}'.format(namespace, t)
             ns_tags.append(t)
         return ns_tags
 
@@ -130,7 +130,7 @@ def parse_tag_namespaces(tag_list):
     """Parse a list of tags out into a dict of lists by namespace"""
     namespaces = {}
     for tag in tag_list:
-        ns = (':' in tag) and ('%s:' % tag.rsplit(':', 1)[0]) or ''
+        ns = (':' in tag) and ('{0!s}:'.format(tag.rsplit(':', 1)[0])) or ''
         if ns not in namespaces:
             namespaces[ns] = []
         namespaces[ns].append(tag)

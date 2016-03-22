@@ -27,12 +27,11 @@ class HumansTXT(object):
                                "Contributors on GitHub", "Developer")
 
     def write_to_file(self, humans, target, message, role):
-        target.write("%s \n" % message)
+        target.write("{0!s} \n".format(message))
         for h in humans:
-            target.write("%s: %s \n" %
-                         (role, h.name.encode('ascii', 'ignore')))
+            target.write("{0!s}: {1!s} \n".format(role, h.name.encode('ascii', 'ignore')))
             if h.website is not None:
-                target.write("Website: %s \n" % h.website)
+                target.write("Website: {0!s} \n".format(h.website))
                 target.write('\n')
         target.write('\n')
 

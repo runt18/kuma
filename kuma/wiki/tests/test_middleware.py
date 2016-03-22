@@ -69,12 +69,12 @@ class DocumentZoneMiddlewareTestCase(UserTestCase, WikiTestCase):
     def test_url_root_internal_redirect(self):
         """Ensure document zone with URL root results in internal redirect"""
 
-        url = '/en-US/%s?raw' % self.zone_root
+        url = '/en-US/{0!s}?raw'.format(self.zone_root)
         response = self.client.get(url, follow=False)
         eq_(200, response.status_code)
         eq_(self.zone_root_content, response.content)
 
-        url = '/en-US/%s/Middle/SubPage?raw' % self.zone_root
+        url = '/en-US/{0!s}/Middle/SubPage?raw'.format(self.zone_root)
         response = self.client.get(url, follow=False)
         eq_(200, response.status_code)
         eq_(self.sub_doc.html, response.content)
@@ -82,7 +82,7 @@ class DocumentZoneMiddlewareTestCase(UserTestCase, WikiTestCase):
         self.root_zone.url_root = 'NewRoot'
         self.root_zone.save()
 
-        url = '/en-US/%s/Middle/SubPage?raw' % 'NewRoot'
+        url = '/en-US/{0!s}/Middle/SubPage?raw'.format('NewRoot')
         response = self.client.get(url, follow=False)
         eq_(200, response.status_code)
         eq_(self.sub_doc.html, response.content)
@@ -92,7 +92,7 @@ class DocumentZoneMiddlewareTestCase(UserTestCase, WikiTestCase):
         Ensure a request for the 'real' path to a document results in a
         redirect to the internal redirect path
         """
-        url = '/en-US/docs/%s?raw=1' % self.middle_doc.slug
+        url = '/en-US/docs/{0!s}?raw=1'.format(self.middle_doc.slug)
         response = self.client.get(url, follow=False)
         eq_(302, response.status_code)
         eq_('http://testserver/en-US/ExtraWiki/Middle?raw=1',
@@ -101,7 +101,7 @@ class DocumentZoneMiddlewareTestCase(UserTestCase, WikiTestCase):
         self.root_zone.url_root = 'NewRoot'
         self.root_zone.save()
 
-        url = '/en-US/docs/%s?raw=1' % self.middle_doc.slug
+        url = '/en-US/docs/{0!s}?raw=1'.format(self.middle_doc.slug)
         response = self.client.get(url, follow=False)
         eq_(302, response.status_code)
         eq_('http://testserver/en-US/NewRoot/Middle?raw=1',
@@ -109,7 +109,7 @@ class DocumentZoneMiddlewareTestCase(UserTestCase, WikiTestCase):
 
     def test_blank_url_root(self):
         """Ensure a blank url_root does not trigger URL remap"""
-        url = '/en-US/docs/%s?raw=1' % self.other_doc.slug
+        url = '/en-US/docs/{0!s}?raw=1'.format(self.other_doc.slug)
         response = self.client.get(url, follow=False)
         eq_(200, response.status_code)
 
@@ -137,6 +137,6 @@ class DocumentZoneMiddlewareTestCase(UserTestCase, WikiTestCase):
         non_zone_doc = none_zone_rev.document
         non_zone_doc.save()
 
-        url = '/en-US/docs/%s' % non_zone_doc.slug
+        url = '/en-US/docs/{0!s}'.format(non_zone_doc.slug)
         response = self.client.get(url, follow=False)
         eq_(200, response.status_code)

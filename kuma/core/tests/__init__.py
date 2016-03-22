@@ -19,7 +19,7 @@ def eq_(first, second, msg=None):
     Note: This should be removed as soon as we no longer use it.
 
     """
-    msg = msg or '%r != %r' % (first, second)
+    msg = msg or '{0!r} != {1!r}'.format(first, second)
     assert first == second, msg
 
 
@@ -29,7 +29,7 @@ def ok_(pred, msg=None):
     Note: This should be removed as soon as we no longer use it.
 
     """
-    msg = msg or '%r != True' % pred
+    msg = msg or '{0!r} != True'.format(pred)
     assert pred, msg
 
 
@@ -97,7 +97,7 @@ class LocalizingMixin(object):
         path = request.get('PATH_INFO', self.defaults.get('PATH_INFO', '/'))
         locale, shortened = split_path(path)
         if not locale:
-            request['PATH_INFO'] = '/%s/%s' % (settings.LANGUAGE_CODE,
+            request['PATH_INFO'] = '/{0!s}/{1!s}'.format(settings.LANGUAGE_CODE,
                                                shortened)
         return super(LocalizingMixin, self).request(**request)
 

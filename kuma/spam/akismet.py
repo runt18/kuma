@@ -21,8 +21,7 @@ class AkismetError(Exception):
         self.debug_help = debug_help
 
     def __str__(self):
-        return ('%s response, debug help: %s, full response: %s' %
-                (self.status_code, self.debug_help, self.response.text))
+        return ('{0!s} response, debug help: {1!s}, full response: {2!s}'.format(self.status_code, self.debug_help, self.response.text))
 
 
 class Akismet(object):
@@ -76,7 +75,7 @@ class Akismet(object):
 
     @property
     def url(self):
-        return 'https://%s.rest.akismet.com/1.1/' % self.key
+        return 'https://{0!s}.rest.akismet.com/1.1/'.format(self.key)
 
     def send(self, method, **payload):
         # blog is the only parameter required by all API endpoints

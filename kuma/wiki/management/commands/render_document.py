@@ -83,7 +83,7 @@ class Command(BaseCommand):
                 if head == 'docs':
                     slug = tail
                 doc = Document.objects.get(locale=locale, slug=slug)
-                log.info(u'Rendering %s (%s)' % (doc, doc.get_absolute_url()))
+                log.info(u'Rendering {0!s} ({1!s})'.format(doc, doc.get_absolute_url()))
                 try:
                     render_document(doc.pk, self.cache_control, self.base_url,
                                     self.options['force'])

@@ -86,7 +86,7 @@ def _format_slug_for_request(slug):
     # http://bugzil.la/1063580
     index = slug.find(TEMPLATE_TITLE_PREFIX)
     if index != -1:
-        slug = '%s%s' % (TEMPLATE_TITLE_PREFIX, slug[(index + len(TEMPLATE_TITLE_PREFIX)):].lower())
+        slug = '{0!s}{1!s}'.format(TEMPLATE_TITLE_PREFIX, slug[(index + len(TEMPLATE_TITLE_PREFIX)):].lower())
     return slug
 
 
@@ -95,11 +95,11 @@ def get(document, cache_control, base_url, timeout=None):
     if not cache_control:
         # Default to the configured max-age for cache control.
         max_age = config.KUMASCRIPT_MAX_AGE
-        cache_control = 'max-age=%s' % max_age
+        cache_control = 'max-age={0!s}'.format(max_age)
 
     if not base_url:
         site = Site.objects.get_current()
-        base_url = 'http://%s' % site.domain
+        base_url = 'http://{0!s}'.format(site.domain)
 
     if not timeout:
         timeout = config.KUMASCRIPT_TIMEOUT
@@ -118,8 +118,7 @@ def get(document, cache_control, base_url, timeout=None):
 
     try:
         url_tmpl = settings.KUMASCRIPT_URL_TEMPLATE
-        url = unicode(url_tmpl).format(path=u'%s/%s' %
-                                       (document_locale,
+        url = unicode(url_tmpl).format(path=u'{0!s}/{1!s}'.format(document_locale,
                                         document_slug_for_kumascript))
 
         cache_keys = build_cache_keys(document_slug, document_locale)
@@ -195,8 +194,8 @@ def get(document, cache_control, base_url, timeout=None):
             errors = [
                 {
                     "level": "error",
-                    "message": "Unexpected response from Kumascript service: %s" %
-                               response.status_code,
+                    "message": "Unexpected response from Kumascript service: {0!s}".format(
+                               response.status_code),
                     "args": ["UnknownError"],
                 },
             ]
@@ -207,7 +206,7 @@ def get(document, cache_control, base_url, timeout=None):
         errors = [
             {
                 "level": "error",
-                "message": "Kumascript service failed unexpectedly: %s" % exc,
+                "message": "Kumascript service failed unexpectedly: {0!s}".format(exc),
                 "args": ["UnknownError"],
             },
         ]
@@ -217,7 +216,7 @@ def get(document, cache_control, base_url, timeout=None):
 def add_env_headers(headers, env_vars):
     """Encode env_vars as kumascript headers, as base64 JSON-encoded values."""
     headers.update(dict(
-        ('x-kumascript-env-%s' % k, base64.b64encode(json.dumps(v)))
+        ('x-kumascript-env-{0!s}'.format(k), base64.b64encode(json.dumps(v)))
         for k, v in env_vars.items()
     ))
     return headers
@@ -264,7 +263,7 @@ def process_errors(response):
         errors = [
             {
                 "level": "error",
-                "message": "Problem parsing errors: %s" % exc,
+                "message": "Problem parsing errors: {0!s}".format(exc),
                 "args": ["ParsingError"],
             },
         ]
@@ -273,9 +272,9 @@ def process_errors(response):
 
 def build_cache_keys(document_locale, document_slug):
     """Build the cache keys used for Kumascript"""
-    path_hash = hashlib.md5((u'%s/%s' % (document_locale, document_slug))
+    path_hash = hashlib.md5((u'{0!s}/{1!s}'.format(document_locale, document_slug))
                             .encode('utf8'))
-    base_key = 'kumascript:%s:%%s' % path_hash.hexdigest()
+    base_key = 'kumascript:{0!s}:%s'.format(path_hash.hexdigest())
     etag_key = base_key % 'etag'
     modified_key = base_key % 'modified'
     body_key = base_key % 'body'

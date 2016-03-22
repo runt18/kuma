@@ -170,10 +170,10 @@ def extract_code_sample(id, src):
     if section:
         # HACK: Ensure the extracted section has a container, in case it
         # consists of a single element.
-        sample = pq('<section>%s</section>' % section)
+        sample = pq('<section>{0!s}</section>'.format(section))
     else:
         # If no section, fall back to plain old ID lookup
-        sample = pq(src).find('[id="%s"]' % id)
+        sample = pq(src).find('[id="{0!s}"]'.format(id))
 
     selector_templates = (
         '.%s',
@@ -219,7 +219,7 @@ def extract_html_attributes(content):
             if token['type'] == 'StartTag':
                 for (namespace, name), value in token['data'].items():
                     attribs.append((name, value))
-        return ['%s="%s"' % (k, v) for k, v in attribs]
+        return ['{0!s}="{1!s}"'.format(k, v) for k, v in attribs]
     except:
         return []
 
@@ -445,7 +445,7 @@ class LinkAnnotationFilter(html5lib_Filter):
                 # Check if this is a special docs path that's exempt from "new"
                 skip = False
                 for path in DOC_SPECIAL_PATHS:
-                    if '/docs/%s' % path in href:
+                    if '/docs/{0!s}'.format(path) in href:
                         skip = True
                 if skip:
                     continue
@@ -534,7 +534,7 @@ class SectionIDFilter(html5lib_Filter):
         """Generate a unique ID"""
         while True:
             self.id_cnt += 1
-            id = 'sect%s' % self.id_cnt
+            id = 'sect{0!s}'.format(self.id_cnt)
             if id not in self.known_ids:
                 self.known_ids.add(id)
                 return id
@@ -594,7 +594,7 @@ class SectionIDFilter(html5lib_Filter):
             start_inc = 2
             slug_base = slug
             while slug in self.known_ids:
-                slug = u'%s_%s' % (slug_base, start_inc)
+                slug = u'{0!s}_{1!s}'.format(slug_base, start_inc)
                 start_inc += 1
 
         attrs[(None, u'id')] = slug
@@ -699,14 +699,14 @@ class SectionEditLinkFilter(html5lib_Filter):
                                    (None, u'title'): ugettext('Edit section'),
                                    (None, u'class'): 'edit-section',
                                    (None, u'data-section-id'): value,
-                                   (None, u'data-section-src-url'): u'%s?%s' % (
+                                   (None, u'data-section-src-url'): u'{0!s}?{1!s}'.format(
                                        reverse('wiki.document',
                                                args=[self.slug],
                                                locale=self.locale),
                                        urlencode({'section': value.encode('utf-8'),
                                                   'raw': 'true'})
                                    ),
-                                   (None, u'href'): u'%s?%s' % (
+                                   (None, u'href'): u'{0!s}?{1!s}'.format(
                                        reverse('wiki.edit',
                                                args=[self.slug],
                                                locale=self.locale),
@@ -780,7 +780,7 @@ class SectionTOCFilter(html5lib_Filter):
                         {'type': 'StartTag', 'name': 'li', 'data': {}},
                         {'type': 'StartTag', 'name': 'a',
                          'data': {(None, u'rel'): 'internal',
-                                  (None, u'href'): '#%s' % id}},
+                                  (None, u'href'): '#{0!s}'.format(id)}},
                     ])
                     self.in_hierarchy = True
                     for t in out:
@@ -998,7 +998,7 @@ class CodeSyntaxFilter(html5lib_Filter):
                         if m:
                             lang = m.group(1).lower()
                             brush = MT_SYNTAX_BRUSH_MAP.get(lang, lang)
-                            attrs[(namespace, u'class')] = "brush: %s" % brush
+                            attrs[(namespace, u'class')] = "brush: {0!s}".format(brush)
                             del attrs[(None, 'function')]
                             token['data'] = attrs
             yield token

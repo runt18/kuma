@@ -111,8 +111,8 @@ def valid_slug_parent(slug, locale):
             parent = Document.objects.get(locale=locale, slug=parent_slug)
         except Document.DoesNotExist:
             raise Exception(
-                ugettext('Parent %s does not exist.' % (
-                    '%s/%s' % (locale, parent_slug))))
+                ugettext('Parent {0!s} does not exist.'.format((
+                    '{0!s}/{1!s}'.format(locale, parent_slug)))))
 
     return parent
 
@@ -133,11 +133,11 @@ def tags_for(cls, model, instance=None, **extra_filters):
     kwargs = extra_filters or {}
     if instance is not None:
         kwargs.update({
-            '%s__content_object' % cls.tag_relname(): instance
+            '{0!s}__content_object'.format(cls.tag_relname()): instance
         })
         return cls.tag_model().objects.filter(**kwargs)
     kwargs.update({
-        '%s__content_object__isnull' % cls.tag_relname(): False
+        '{0!s}__content_object__isnull'.format(cls.tag_relname()): False
     })
     return cls.tag_model().objects.filter(**kwargs).distinct()
 
@@ -295,7 +295,7 @@ class Document(NotificationsMixin, models.Model):
     admin_objects = DocumentAdminManager()
 
     def __unicode__(self):
-        return u'%s (%s)' % (self.get_absolute_url(), self.title)
+        return u'{0!s} ({1!s})'.format(self.get_absolute_url(), self.title)
 
     @cache_with_field('body_html')
     def get_body_html(self, *args, **kwargs):
@@ -383,7 +383,7 @@ class Document(NotificationsMixin, models.Model):
             content = self.html
         else:
             content = self.extract_section(self.html, section_id)
-        return '"%s"' % hashlib.sha1(content.encode('utf8')).hexdigest()
+        return '"{0!s}"'.format(hashlib.sha1(content.encode('utf8')).hexdigest())
 
     def current_or_latest_revision(self):
         """Returns current revision if there is one, else the last created
@@ -735,7 +735,7 @@ class Document(NotificationsMixin, models.Model):
         # Can't save this translation if parent not localizable
         if (self.parent and self.parent.id != self.id and
                 not self.parent.is_localizable):
-            raise ValidationError('"%s": parent "%s" is not localizable.' % (
+            raise ValidationError('"{0!s}": parent "{1!s}" is not localizable.'.format(
                                   unicode(self), unicode(self.parent)))
 
         # Can't make not localizable if it has translations
@@ -795,10 +795,9 @@ class Document(NotificationsMixin, models.Model):
             revision.pk = None
 
             # add a sensible comment
-            revision.comment = ("Revert to revision of %s by %s" %
-                                (revision.created, revision.creator))
+            revision.comment = ("Revert to revision of {0!s} by {1!s}".format(revision.created, revision.creator))
             if comment:
-                revision.comment = u'%s: "%s"' % (revision.comment, comment)
+                revision.comment = u'{0!s}: "{1!s}"'.format(revision.comment, comment)
             revision.created = datetime.now()
             revision.creator = user
 
@@ -915,8 +914,7 @@ class Document(NotificationsMixin, models.Model):
     def delete(self, *args, **kwargs):
         if waffle.switch_is_active('wiki_error_on_delete'):
             # bug 863692: Temporary while we investigate disappearing pages.
-            raise Exception("Attempt to delete document %s: %s" %
-                            (self.id, self.title))
+            raise Exception("Attempt to delete document {0!s}: {1!s}".format(self.id, self.title))
         else:
             if self.is_redirect or 'purge' in kwargs:
                 if 'purge' in kwargs:
@@ -933,12 +931,10 @@ class Document(NotificationsMixin, models.Model):
     def purge(self):
         if waffle.switch_is_active('wiki_error_on_delete'):
             # bug 863692: Temporary while we investigate disappearing pages.
-            raise Exception("Attempt to purge document %s: %s" %
-                            (self.id, self.title))
+            raise Exception("Attempt to purge document {0!s}: {1!s}".format(self.id, self.title))
         else:
             if not self.deleted:
-                raise Exception("Attempt tp purge non-deleted document %s: %s" %
-                                (self.id, self.title))
+                raise Exception("Attempt tp purge non-deleted document {0!s}: {1!s}".format(self.id, self.title))
             self.delete(purge=True)
 
     def restore(self):
@@ -1126,27 +1122,27 @@ class Document(NotificationsMixin, models.Model):
                 exc_class, exc_message, exc_tb = sys.exc_info()
                 message = """
 Failure occurred while attempting to move document
-with id %(doc_id)s.
+with id {doc_id!s}.
 
 That document can be viewed at:
 
-https://developer.mozilla.org/%(locale)s/docs/%(slug)s
+https://developer.mozilla.org/{locale!s}/docs/{slug!s}
 
 The exception raised was:
 
-Exception type: %(exc_class)s
+Exception type: {exc_class!s}
 
-Exception message: %(exc_message)s
+Exception message: {exc_message!s}
 
 Full traceback:
 
-%(traceback)s
-                """ % {'doc_id': child.id,
+{traceback!s}
+                """.format(**{'doc_id': child.id,
                        'locale': old_child_locale,
                        'slug': old_child_slug,
                        'exc_class': exc_class,
                        'exc_message': exc_message,
-                       'traceback': traceback.format_exc(e)}
+                       'traceback': traceback.format_exc(e)})
                 raise PageMoveError(message)
 
     def repair_breadcrumbs(self):
@@ -1211,7 +1207,7 @@ Full traceback:
                     stub_tags = '"TopicStub","NeedsTranslation"'
                     stub_l10n_tags = ['inprogress']
                     if new_rev.tags:
-                        new_rev.tags = '%s,%s' % (new_rev.tags, stub_tags)
+                        new_rev.tags = '{0!s},{1!s}'.format(new_rev.tags, stub_tags)
                     else:
                         new_rev.tags = stub_tags
                     new_rev.save()
@@ -1473,11 +1469,11 @@ class DocumentDeletionLog(models.Model):
     reason = models.TextField()
 
     def __unicode__(self):
-        return "/%(locale)s/%(slug)s deleted by %(user)s" % {
+        return "/{locale!s}/{slug!s} deleted by {user!s}".format(**{
             'locale': self.locale,
             'slug': self.slug,
             'user': self.user
-        }
+        })
 
 
 class DocumentZone(models.Model):
@@ -1492,7 +1488,7 @@ class DocumentZone(models.Model):
         help_text="alternative URL path root for documents under this zone")
 
     def __unicode__(self):
-        return u'DocumentZone %s (%s)' % (self.document.get_absolute_url(),
+        return u'DocumentZone {0!s} ({1!s})'.format(self.document.get_absolute_url(),
                                           self.document.title)
 
 
@@ -1691,7 +1687,7 @@ class Revision(models.Model):
         self.document.save()
 
     def __unicode__(self):
-        return u'[%s] %s #%s' % (self.document.locale,
+        return u'[{0!s}] {1!s} #{2!s}'.format(self.document.locale,
                                  self.document.title,
                                  self.id)
 
@@ -1715,7 +1711,7 @@ class Revision(models.Model):
             tidied_content = self.tidied_content
         else:
             from .tasks import tidy_revision_content
-            tidying_scheduled_cache_key = 'kuma:tidying_scheduled:%s' % self.pk
+            tidying_scheduled_cache_key = 'kuma:tidying_scheduled:{0!s}'.format(self.pk)
             # if there isn't already a task scheduled for the revision
             tidying_already_scheduled = memcache.get(tidying_scheduled_cache_key)
             if not tidying_already_scheduled:
@@ -1795,7 +1791,7 @@ class RevisionIP(models.Model):
     objects = RevisionIPManager()
 
     def __unicode__(self):
-        return '%s (revision %d)' % (self.ip or 'No IP', self.revision.id)
+        return '{0!s} (revision {1:d})'.format(self.ip or 'No IP', self.revision.id)
 
 
 class RevisionAkismetSubmission(AkismetSubmission):
@@ -1821,18 +1817,18 @@ class RevisionAkismetSubmission(AkismetSubmission):
     def __unicode__(self):
         if self.revision:
             return (
-                u'%(type)s submission by %(sender)s (Revision %(revision_id)d)' % {
+                u'{type!s} submission by {sender!s} (Revision {revision_id:d})'.format(**{
                     'type': self.get_type_display(),
                     'sender': self.sender,
                     'revision_id': self.revision.id,
-                }
+                })
             )
         else:
             return (
-                u'%(type)s submission by %(sender)s (no revision)' % {
+                u'{type!s} submission by {sender!s} (no revision)'.format(**{
                     'type': self.get_type_display(),
                     'sender': self.sender,
-                }
+                })
             )
 
 
@@ -1872,4 +1868,4 @@ class DocumentSpamAttempt(SpamAttempt):
     )
 
     def __unicode__(self):
-        return u'%s (%s)' % (self.slug, self.title)
+        return u'{0!s} ({1!s})'.format(self.slug, self.title)

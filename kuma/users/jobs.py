@@ -18,8 +18,8 @@ class UserGravatarURLJob(KumaJob):
                     'http://www.gravatar.com')
         email_hash = hashlib.md5(email.lower().encode('utf8'))
         params = urllib.urlencode({'s': size, 'd': default, 'r': rating})
-        return '%(base_url)s/avatar/%(hash)s?%(params)s' % {
+        return '{base_url!s}/avatar/{hash!s}?{params!s}'.format(**{
             'base_url': base_url,
             'hash': email_hash.hexdigest(),
             'params': params,
-        }
+        })

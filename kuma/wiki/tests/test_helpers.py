@@ -71,8 +71,8 @@ class DocumentZoneTests(UserTestCase, WikiTestCase):
         """
         self.root_content = """
             <h4 id="links">Links</h4>
-            %s
-        """ % (self.root_links_content)
+            {0!s}
+        """.format((self.root_links_content))
 
         root_rev = revision(title='ZoneRoot',
                             slug='ZoneRoot',
@@ -101,8 +101,8 @@ class DocumentZoneTests(UserTestCase, WikiTestCase):
         """
         self.sub_sub_content = """
             <h4 id="links">Links</h4>
-            %s
-        """ % (self.sub_sub_links_content)
+            {0!s}
+        """.format((self.sub_sub_links_content))
 
         sub_sub_rev = revision(title='SubSubPage',
                                slug='SubSubPage',
