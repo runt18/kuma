@@ -230,7 +230,7 @@ LOCALE_ALIASES = {
     'zh-Hant': 'zh-TW',
 }
 
-LANGUAGE_URL_MAP = dict([(i.lower(), i) for i in MDN_LANGUAGES])
+LANGUAGE_URL_MAP = {i.lower(): i for i in MDN_LANGUAGES}
 
 for requested_lang, delivered_lang in LOCALE_ALIASES.items():
     if delivered_lang in MDN_LANGUAGES:
