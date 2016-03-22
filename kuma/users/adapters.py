@@ -53,10 +53,12 @@ class KumaAccountAdapter(DefaultAccountAdapter):
         return tuple('messages/%s.txt' % name for name in names)
 
     def add_message(self, request, level, message_template,
-                    message_context={}, extra_tags='', *args, **kwargs):
+                    message_context=None, extra_tags='', *args, **kwargs):
         """
         Adds an extra "account" tag to the success and error messages.
         """
+        if message_context is None:
+            message_context = {}
         # let's ignore some messages
         if message_template.endswith(self.message_templates('logged_in',
                                                             'logged_out')):

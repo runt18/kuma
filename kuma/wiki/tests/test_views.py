@@ -4034,10 +4034,12 @@ class APITests(UserTestCase, WikiTestCase):
                          HTTP_AUTHORIZATION=self.basic_auth)
         eq_(205, resp.status_code)
 
-    def _put(self, path, data={}, content_type=MULTIPART_CONTENT,
+    def _put(self, path, data=None, content_type=MULTIPART_CONTENT,
              follow=False, **extra):
         """django.test.client.put() does the wrong thing, here. This does
         better, based on post()."""
+        if data is None:
+            data = {}
         if content_type is MULTIPART_CONTENT:
             post_data = encode_multipart(BOUNDARY, data)
         else:
