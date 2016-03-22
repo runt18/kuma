@@ -68,7 +68,7 @@ class ContentSectionToolTests(UserTestCase):
             ('Quick_Links', 'Quick_Links'),
         )
         for cls, id in expected:
-            eq_(id, result_doc.find('.%s' % cls).attr('id'))
+            eq_(id, result_doc.find('.{0!s}'.format(cls)).attr('id'))
 
         # Then, ensure all elements in need of an ID now all have unique IDs.
         ok_(len(SECTION_TAGS) > 0)
@@ -606,13 +606,13 @@ class ContentSectionToolTests(UserTestCase):
 
             <ul id="sample2" class="code-sample">
                 <li><span>HTML</span>
-                    <pre class="brush: html">%s</pre>
+                    <pre class="brush: html">{0!s}</pre>
                 </li>
                 <li><span>CSS</span>
-                    <pre class="brush:css;random:crap;in:the;classname">%s</pre>
+                    <pre class="brush:css;random:crap;in:the;classname">{1!s}</pre>
                 </li>
                 <li><span>JS</span>
-                    <pre class="brush: js">%s</pre>
+                    <pre class="brush: js">{2!s}</pre>
                 </li>
             </ul>
 
@@ -632,7 +632,7 @@ class ContentSectionToolTests(UserTestCase):
             </div>
 
             <p>Yadda yadda</p>
-        """ % (escape(sample_html), escape(sample_css), escape(sample_js))
+        """.format(escape(sample_html), escape(sample_css), escape(sample_js))
 
         # live sample using the section logic
         result = kuma.wiki.content.extract_code_sample('sample0', doc_src)
@@ -706,20 +706,20 @@ class ContentSectionToolTests(UserTestCase):
 
     def test_iframe_host_filter(self):
         slug = 'test-code-embed'
-        embed_url = 'https://sampleserver/en-US/docs/%s$samples/sample1' % slug
+        embed_url = 'https://sampleserver/en-US/docs/{0!s}$samples/sample1'.format(slug)
 
         doc_src = """
             <p>This is a page. Deal with it.</p>
             <div id="sample1" class="code-sample">
                 <pre class="brush: html">Some HTML</pre>
-                <pre class="brush: css">.some-css { color: red; }</pre>
+                <pre class="brush: css">.some-css {{ color: red; }}</pre>
                 <pre class="brush: js">window.alert("HI THERE")</pre>
             </div>
-            <iframe id="if1" src="%(embed_url)s"></iframe>
+            <iframe id="if1" src="{embed_url!s}"></iframe>
             <iframe id="if2" src="http://testserver"></iframe>
             <iframe id="if3" src="https://some.alien.site.com"></iframe>
             <p>test</p>
-        """ % dict(embed_url=embed_url)
+        """.format(**dict(embed_url=embed_url))
 
         result_src = (kuma.wiki.content.parse(doc_src)
                       .filterIframeHosts('^https?\:\/\/sampleserver')
@@ -763,11 +763,11 @@ class ContentSectionToolTests(UserTestCase):
             'https://youtube.com/sembed/'
         )
         doc_src = """
-            <iframe id="if1" src="%s"></iframe>
-            <iframe id="if2" src="%s"></iframe>
-            <iframe id="if3" src="%s"></iframe>
+            <iframe id="if1" src="{0!s}"></iframe>
+            <iframe id="if2" src="{1!s}"></iframe>
+            <iframe id="if3" src="{2!s}"></iframe>
             <p>test</p>
-        """ % tubes
+        """.format(*tubes)
         result_src = (kuma.wiki.content.parse(doc_src)
                       .filterIframeHosts('^https?\:\/\/(www.)?youtube.com\/embed\/(\.*)')
                       .serialize())
@@ -821,7 +821,7 @@ class ContentSectionToolTests(UserTestCase):
             base_url=base_url,
             exist_url=d.get_absolute_url(),
             exist_url_with_base=urljoin(base_url, d.get_absolute_url()),
-            uilocale_url=u'/en-US/docs/%s/%s' % (d.locale, d.slug),
+            uilocale_url=u'/en-US/docs/{0!s}/{1!s}'.format(d.locale, d.slug),
             noexist_url=u'/en-US/docs/no-such-doc',
             noexist_url_with_base=urljoin(base_url,
                                           u'/en-US/docs/no-such-doc'),
@@ -832,57 +832,57 @@ class ContentSectionToolTests(UserTestCase):
             templates_url='/en-US/docs/templates',
         )
         doc_src = u"""
-                <li><a href="%(nonen_slug)s">Héritée</a></li>
-                <li><a href="%(exist_url)s">This doc should exist</a></li>
-                <li><a href="%(exist_url)s#withanchor">This doc should exist</a></li>
-                <li><a href="%(exist_url_with_base)s">This doc should exist</a></li>
-                <li><a href="%(exist_url_with_base)s#withanchor">This doc should exist</a></li>
-                <li><a href="%(uilocale_url)s">This doc should exist</a></li>
-                <li><a class="foobar" href="%(exist_url)s">This doc should exist, and its class should be left alone.</a></li>
-                <li><a href="%(noexist_url)s#withanchor">This doc should NOT exist</a></li>
-                <li><a href="%(noexist_url)s">This doc should NOT exist</a></li>
-                <li><a href="%(noexist_url_with_base)s">This doc should NOT exist</a></li>
-                <li><a href="%(noexist_url_with_base)s#withanchor">This doc should NOT exist</a></li>
-                <li><a href="%(noexist_uilocale_url)s">This doc should NOT exist</a></li>
-                <li><a class="foobar" href="%(noexist_url)s">This doc should NOT exist, and its class should be altered</a></li>
+                <li><a href="{nonen_slug!s}">Héritée</a></li>
+                <li><a href="{exist_url!s}">This doc should exist</a></li>
+                <li><a href="{exist_url!s}#withanchor">This doc should exist</a></li>
+                <li><a href="{exist_url_with_base!s}">This doc should exist</a></li>
+                <li><a href="{exist_url_with_base!s}#withanchor">This doc should exist</a></li>
+                <li><a href="{uilocale_url!s}">This doc should exist</a></li>
+                <li><a class="foobar" href="{exist_url!s}">This doc should exist, and its class should be left alone.</a></li>
+                <li><a href="{noexist_url!s}#withanchor">This doc should NOT exist</a></li>
+                <li><a href="{noexist_url!s}">This doc should NOT exist</a></li>
+                <li><a href="{noexist_url_with_base!s}">This doc should NOT exist</a></li>
+                <li><a href="{noexist_url_with_base!s}#withanchor">This doc should NOT exist</a></li>
+                <li><a href="{noexist_uilocale_url!s}">This doc should NOT exist</a></li>
+                <li><a class="foobar" href="{noexist_url!s}">This doc should NOT exist, and its class should be altered</a></li>
                 <li><a href="http://mozilla.org/">This is an external link</a></li>
                 <li><a class="foobar" name="quux">A lack of href should not cause a problem.</a></li>
                 <li><a>In fact, a "link" with no attributes should be no problem as well.</a></li>
-                <a href="%(tag_url)s">Tag link</a>
-                <a href="%(feed_url)s">Feed link</a>
-                <a href="%(templates_url)s">Templates link</a>
+                <a href="{tag_url!s}">Tag link</a>
+                <a href="{feed_url!s}">Feed link</a>
+                <a href="{templates_url!s}">Templates link</a>
                 <a href="/en-US/docs/DOM/stylesheet">Case sensitive 1</a>
                 <a href="/en-US/docs/DOM/Stylesheet">Case sensitive 1</a>
                 <a href="/en-US/docs/DOM/StyleSheet">Case sensitive 1</a>
                 <a href="/en-us/docs/dom/StyleSheet">Case sensitive 1</a>
                 <a href="/en-US/docs/dom/Styles">For good measure</a>
-        """ % vars
+        """.format(**vars)
         expected = u"""
-                <li><a href="%(nonen_slug)s">Héritée</a></li>
-                <li><a href="%(exist_url)s">This doc should exist</a></li>
-                <li><a href="%(exist_url)s#withanchor">This doc should exist</a></li>
-                <li><a href="%(exist_url_with_base)s">This doc should exist</a></li>
-                <li><a href="%(exist_url_with_base)s#withanchor">This doc should exist</a></li>
-                <li><a href="%(uilocale_url)s">This doc should exist</a></li>
-                <li><a class="foobar" href="%(exist_url)s">This doc should exist, and its class should be left alone.</a></li>
-                <li><a class="new" href="%(noexist_url)s#withanchor">This doc should NOT exist</a></li>
-                <li><a class="new" href="%(noexist_url)s">This doc should NOT exist</a></li>
-                <li><a class="new" href="%(noexist_url_with_base)s">This doc should NOT exist</a></li>
-                <li><a class="new" href="%(noexist_url_with_base)s#withanchor">This doc should NOT exist</a></li>
-                <li><a class="new" href="%(noexist_uilocale_url)s">This doc should NOT exist</a></li>
-                <li><a class="foobar new" href="%(noexist_url)s">This doc should NOT exist, and its class should be altered</a></li>
+                <li><a href="{nonen_slug!s}">Héritée</a></li>
+                <li><a href="{exist_url!s}">This doc should exist</a></li>
+                <li><a href="{exist_url!s}#withanchor">This doc should exist</a></li>
+                <li><a href="{exist_url_with_base!s}">This doc should exist</a></li>
+                <li><a href="{exist_url_with_base!s}#withanchor">This doc should exist</a></li>
+                <li><a href="{uilocale_url!s}">This doc should exist</a></li>
+                <li><a class="foobar" href="{exist_url!s}">This doc should exist, and its class should be left alone.</a></li>
+                <li><a class="new" href="{noexist_url!s}#withanchor">This doc should NOT exist</a></li>
+                <li><a class="new" href="{noexist_url!s}">This doc should NOT exist</a></li>
+                <li><a class="new" href="{noexist_url_with_base!s}">This doc should NOT exist</a></li>
+                <li><a class="new" href="{noexist_url_with_base!s}#withanchor">This doc should NOT exist</a></li>
+                <li><a class="new" href="{noexist_uilocale_url!s}">This doc should NOT exist</a></li>
+                <li><a class="foobar new" href="{noexist_url!s}">This doc should NOT exist, and its class should be altered</a></li>
                 <li><a class="external" href="http://mozilla.org/">This is an external link</a></li>
                 <li><a class="foobar" name="quux">A lack of href should not cause a problem.</a></li>
                 <li><a>In fact, a "link" with no attributes should be no problem as well.</a></li>
-                <a href="%(tag_url)s">Tag link</a>
-                <a href="%(feed_url)s">Feed link</a>
-                <a href="%(templates_url)s">Templates link</a>
+                <a href="{tag_url!s}">Tag link</a>
+                <a href="{feed_url!s}">Feed link</a>
+                <a href="{templates_url!s}">Templates link</a>
                 <a href="/en-US/docs/DOM/stylesheet">Case sensitive 1</a>
                 <a href="/en-US/docs/DOM/Stylesheet">Case sensitive 1</a>
                 <a href="/en-US/docs/DOM/StyleSheet">Case sensitive 1</a>
                 <a href="/en-us/docs/dom/StyleSheet">Case sensitive 1</a>
                 <a class="new" href="/en-US/docs/dom/Styles">For good measure</a>
-        """ % vars
+        """.format(**vars)
 
         # Split the markup into lines, to better see failures
         doc_lines = doc_src.strip().split("\n")
@@ -1013,12 +1013,12 @@ class AllowedHTMLTests(KumaTestCase):
 
     def test_allowed_tags(self):
         for tag in self.simple_tags:
-            html_str = '<%(tag)s></%(tag)s>' % {'tag': tag}
+            html_str = '<{tag!s}></{tag!s}>'.format(**{'tag': tag})
             eq_(html_str, bleach.clean(html_str, attributes=ALLOWED_ATTRIBUTES,
                                        tags=ALLOWED_TAGS))
 
         for tag in self.unclose_tags:
-            html_str = '<%s>' % tag
+            html_str = '<{0!s}>'.format(tag)
             eq_(html_str, bleach.clean(html_str, attributes=ALLOWED_ATTRIBUTES,
                                        tags=ALLOWED_TAGS))
 
@@ -1032,7 +1032,7 @@ class AllowedHTMLTests(KumaTestCase):
                     'article', 'aside', 'figure', 'dialog', 'hgroup', 'mark',
                     'time', 'meter', 'output', 'progress', 'audio', 'details',
                     'datagrid', 'datalist', 'address'):
-            html_str = '<%(tag)s id="foo"></%(tag)s>' % {'tag': tag}
+            html_str = '<{tag!s} id="foo"></{tag!s}>'.format(**{'tag': tag})
             eq_(html_str, bleach.clean(html_str, attributes=ALLOWED_ATTRIBUTES,
                                        tags=ALLOWED_TAGS))
 
@@ -1062,10 +1062,10 @@ class SearchParserTests(KumaTestCase):
     def test_css_classname_extraction(self):
         expected = ('foobar', 'barfoo', 'bazquux')
         content = """
-            <p class="%s">Test</p>
-            <p class="%s">Test</p>
-            <div class="%s">Test</div>
-        """ % expected
+            <p class="{0!s}">Test</p>
+            <p class="{1!s}">Test</p>
+            <div class="{2!s}">Test</div>
+        """.format(*expected)
         result = extract_css_classnames(content)
         eq_(sorted(expected), sorted(result))
 
@@ -1076,21 +1076,21 @@ class SearchParserTests(KumaTestCase):
             'data-boof="farb"'
         )
         content = """
-            <p %s>Test</p>
-            <p %s>Test</p>
-            <div %s>Test</div>
-        """ % expected
+            <p {0!s}>Test</p>
+            <p {1!s}>Test</p>
+            <div {2!s}>Test</div>
+        """.format(*expected)
         result = extract_html_attributes(content)
         eq_(sorted(expected), sorted(result))
 
     def test_kumascript_macro_extraction(self):
         expected = ('foobar', 'barfoo', 'bazquux', 'banana')
         content = """
-            <p>{{ %s }}</p>
-            <p>{{ %s("foo", "bar", "baz") }}</p>
-            <p>{{ %s    ("quux") }}</p>
-            <p>{{%s}}</p>
-        """ % expected
+            <p>{{{{ {0!s} }}}}</p>
+            <p>{{{{ {1!s}("foo", "bar", "baz") }}}}</p>
+            <p>{{{{ {2!s}    ("quux") }}}}</p>
+            <p>{{{{{3!s}}}}}</p>
+        """.format(*expected)
         result = extract_kumascript_macro_names(content)
         eq_(sorted(expected), sorted(result))
 

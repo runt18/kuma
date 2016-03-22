@@ -105,9 +105,9 @@ class TestDateTimeFormat(UserTestCase):
         """Expects shortdatetime, format: Today at {time}."""
         date_today = datetime.today()
         value_returned = unicode(datetimeformat(self.context, date_today))
-        value_expected = 'Today at %s' % format_time(date_today,
+        value_expected = 'Today at {0!s}'.format(format_time(date_today,
                                                      format='short',
-                                                     locale=u'en_US')
+                                                     locale=u'en_US'))
         eq_(pq(value_returned)('time').text(), value_expected)
 
     def test_locale(self):

@@ -80,11 +80,11 @@ def search_exception_handler(exc, context):
             # FIXME: This really should return a 503 error instead but Zeus
             # doesn't let that through and displays a generic error page in that
             # case which we don't want here
-            log.error('Elasticsearch exception: %s' % exc)
+            log.error('Elasticsearch exception: {0!s}'.format(exc))
             return Response({'detail': SEARCH_DOWN_DETAIL},
                             status=status.HTTP_200_OK)
         elif isinstance(exc, UnicodeDecodeError):
-            log.error('UnicodeDecodeError exception: %s' % exc)
+            log.error('UnicodeDecodeError exception: {0!s}'.format(exc))
             return Response({'detail': SEARCH_ERROR_DETAIL},
                             status=status.HTTP_404_NOT_FOUND)
 

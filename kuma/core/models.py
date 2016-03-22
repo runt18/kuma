@@ -18,7 +18,7 @@ class IPBan(models.Model):
         self.save()
 
     def __unicode__(self):
-        return u'%s banned on %s' % (self.ip, self.created)
+        return u'{0!s} banned on {1!s}'.format(self.ip, self.created)
 
 
 @receiver(models.signals.post_save, sender=IPBan)

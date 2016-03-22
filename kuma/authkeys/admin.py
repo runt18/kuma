@@ -6,11 +6,11 @@ from .models import Key, KeyAction
 
 
 def history_link(self):
-    url = '%s?%s' % (reverse('admin:authkeys_keyaction_changelist'),
-                     'key__exact=%s' % (self.id))
+    url = '{0!s}?{1!s}'.format(reverse('admin:authkeys_keyaction_changelist'),
+                     'key__exact={0!s}'.format((self.id)))
     count = self.history.count()
     what = (count == 1) and 'action' or 'actions'
-    return '<a href="%s">%s&nbsp;%s</a>' % (url, count, what)
+    return '<a href="{0!s}">{1!s}&nbsp;{2!s}</a>'.format(url, count, what)
 
 history_link.allow_tags = True
 history_link.short_description = 'Usage history'
@@ -28,7 +28,7 @@ def key_link(self):
     key = self.key
     url = reverse('admin:authkeys_key_change',
                   args=[key.id])
-    return '<a href="%s">%s (#%s)</a>' % (url, key.user, key.id)
+    return '<a href="{0!s}">{1!s} (#{2!s})</a>'.format(url, key.user, key.id)
 
 key_link.allow_tags = True
 key_link.short_description = 'Key'
@@ -36,10 +36,10 @@ key_link.short_description = 'Key'
 
 def content_object_link(self):
     obj = self.content_object
-    url_key = 'admin:%s_%s_change' % (obj._meta.app_label,
+    url_key = 'admin:{0!s}_{1!s}_change'.format(obj._meta.app_label,
                                       obj._meta.model_name)
     url = reverse(url_key, args=[obj.id])
-    return '<a href="%s">%s (#%s)</a>' % (url, self.content_type, obj.pk)
+    return '<a href="{0!s}">{1!s} (#{2!s})</a>'.format(url, self.content_type, obj.pk)
 
 content_object_link.allow_tags = True
 content_object_link.short_description = 'Object'

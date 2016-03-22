@@ -37,16 +37,16 @@ class UserAdmin(BaseUserAdmin):
         link = urlparams(reverse('dashboards.revisions'),
                          user=obj.username)
         count = obj.created_revisions.count()
-        return ('<a href="%(link)s"><strong>%(count)s</strong></a>' %
-                {'link': link, 'count': count})
+        return ('<a href="{link!s}"><strong>{count!s}</strong></a>'.format(**
+                {'link': link, 'count': count}))
 
     revisions.allow_tags = True
 
     def website(self, obj):
         """HTML link to user's website"""
         if obj.website_url:
-            return ('<a href="%(url)s"><strong>%(url)s</strong></a>' %
-                    {'url': escape(obj.website_url)})
+            return ('<a href="{url!s}"><strong>{url!s}</strong></a>'.format(**
+                    {'url': escape(obj.website_url)}))
         return ""
 
     website.allow_tags = True

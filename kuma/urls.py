@@ -59,7 +59,7 @@ urlpatterns = [
 if settings.SERVE_MEDIA:
     media_url = settings.MEDIA_URL.lstrip('/').rstrip('/')
     urlpatterns += [
-        url(r'^%s/(?P<path>.*)$' % media_url,
+        url(r'^{0!s}/(?P<path>.*)$'.format(media_url),
             serve,
             {'document_root': settings.MEDIA_ROOT}),
     ]

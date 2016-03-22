@@ -40,14 +40,14 @@ class AttachmentTests(UserTestCase, WikiTestCase):
 
         # now stick it in/on a document
         attachment = Attachment.objects.get(title=title)
-        rev = revision(content='<img src="%s" />' % attachment.get_file_url(),
+        rev = revision(content='<img src="{0!s}" />'.format(attachment.get_file_url()),
                        save=True)
 
         # view it and verify markup is escaped
         response = self.client.get(rev.document.get_edit_url())
         eq_(200, response.status_code)
         doc = pq(response.content)
-        eq_('%s xss' % title,
+        eq_('{0!s} xss'.format(title),
             doc('#page-attachments-table .attachment-name-cell').text())
         ok_('&gt;&lt;img src=x onerror=prompt(navigator.userAgent);&gt;' in
             doc('#page-attachments-table .attachment-name-cell').html())

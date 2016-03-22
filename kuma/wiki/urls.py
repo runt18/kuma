@@ -168,6 +168,6 @@ urlpatterns = [
         AttachmentsFeed(),
         name="attachments.feeds.recent_files"),
 
-    url(r'^/(?P<document_path>%s)' % DOCUMENT_PATH_RE.pattern,
+    url(r'^/(?P<document_path>{0!s})'.format(DOCUMENT_PATH_RE.pattern),
         include(document_patterns)),
 ]

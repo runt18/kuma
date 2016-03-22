@@ -48,7 +48,7 @@ class Command(NoArgsCommand):
         for feed in feeds:
             new_entry_count += self.update_feed(feed, **options)
 
-        log.info("Finished run in %f seconds for %d new entries" % (
+        log.info("Finished run in {0:f} seconds for {1:d} new entries".format(
             (time.time() - start), new_entry_count))
 
     def update_feed(self, feed, **options):
@@ -64,7 +64,7 @@ class Command(NoArgsCommand):
             stream = self.fetch_feed(feed)
 
             if stream:
-                log.debug('Processing %s: %s' % (feed.shortname, feed.url))
+                log.debug('Processing {0!s}: {1!s}'.format(feed.shortname, feed.url))
 
                 if 'feed' in stream and 'title' in stream.feed:
                     log.debug('Processing title: %s', stream.feed.title)
@@ -116,7 +116,7 @@ class Command(NoArgsCommand):
             feed.etag = ''
         if feed.last_modified is None:
             feed.last_modified = datetime.datetime(1975, 1, 10)
-        log.debug("feed id=%s feed url=%s etag=%s last_modified=%s" % (
+        log.debug("feed id={0!s} feed url={1!s} etag={2!s} last_modified={3!s}".format(
             feed.shortname, feed.url, feed.etag, str(feed.last_modified)))
         try:
             stream = feedparser.parse(feed.url, etag=feed.etag,
@@ -176,8 +176,7 @@ class Command(NoArgsCommand):
                 log.error('Unable to fetch %s Exception: %s',
                           feed.url, stream.bozo_exception)
                 bozo_msg = stream.bozo_exception
-            feed.disabled_reason = ("Error while reading the feed: %s __ %s" %
-                                    (url_status, bozo_msg))
+            feed.disabled_reason = ("Error while reading the feed: {0!s} __ {1!s}".format(url_status, bozo_msg))
             dirty_feed = True
         else:
             # We've got a live one...
@@ -190,7 +189,7 @@ class Command(NoArgsCommand):
 
         if ('etag' in stream and stream.etag != feed.etag and
                 stream.etag is not None):
-            log.info("New etag %s" % stream.etag)
+            log.info("New etag {0!s}".format(stream.etag))
             feed.etag = stream.etag
             dirty_feed = True
 
@@ -198,13 +197,13 @@ class Command(NoArgsCommand):
                 stream.modified_parsed != feed.last_modified):
             feed.last_modified = time.strftime("%Y-%m-%d %H:%M:%S",
                                                stream.modified_parsed)
-            log.info("New last_modified %s" % feed.last_modified)
+            log.info("New last_modified {0!s}".format(feed.last_modified))
             dirty_feed = True
 
         if dirty_feed:
             try:
                 dirty_feed = False
-                log.debug("Feed %s changed, updating db" % feed)
+                log.debug("Feed {0!s} changed, updating db".format(feed))
                 feed.save()
             except KeyboardInterrupt:
                 raise

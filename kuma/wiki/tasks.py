@@ -45,7 +45,7 @@ def render_document(pk, cache_control, base_url, force=False):
     try:
         document.render(cache_control, base_url)
     except Exception as e:
-        subject = 'Exception while rendering document %s' % document.pk
+        subject = 'Exception while rendering document {0!s}'.format(document.pk)
         mail_admins(subject=subject, message=e)
     return document.rendered_errors
 
@@ -55,8 +55,8 @@ def email_render_document_progress(percent_complete, total):
     """
     Task to send email for render_document progress notification.
     """
-    subject = ('The command `render_document` is %s%% complete' %
-               percent_complete)
+    subject = ('The command `render_document` is {0!s}% complete'.format(
+               percent_complete))
     message = (
         'The command `render_document` is %s%% complete out of a total of '
         '%s documents to render.' % (percent_complete, total))
@@ -70,16 +70,15 @@ def render_document_chunk(pks, cache_control='no-cache', base_url=None,
     Simple task to render a chunk of documents instead of one per each
     """
     logger = render_document_chunk.get_logger()
-    logger.info(u'Starting to render document chunk: %s' %
-                ','.join([str(pk) for pk in pks]))
+    logger.info(u'Starting to render document chunk: {0!s}'.format(
+                ','.join([str(pk) for pk in pks])))
     base_url = base_url or settings.SITE_URL
     for pk in pks:
         # calling the task without delay here since we want to localize
         # the processing of the chunk in one process
         result = render_document(pk, cache_control, base_url, force=force)
         if result:
-            logger.error(u'Error while rendering document %s with error: %s' %
-                         (pk, result))
+            logger.error(u'Error while rendering document {0!s} with error: {1!s}'.format(pk, result))
     logger.info(u'Finished rendering of document chunk')
 
 
@@ -116,7 +115,7 @@ def render_stale_documents(log=None):
         # fetch a logger in case none is given
         log = render_stale_documents.get_logger()
 
-    log.info('Found %s stale documents' % stale_docs_count)
+    log.info('Found {0!s} stale documents'.format(stale_docs_count))
     stale_pks = stale_docs.values_list('pk', flat=True)
 
     pre_task = acquire_render_lock.si()
@@ -148,8 +147,8 @@ def move_page(locale, slug, new_slug, email):
         user = User.objects.get(email=email)
     except User.DoesNotExist:
         transaction.rollback()
-        logging.error('Page move failed: no user with email address %s' %
-                      email)
+        logging.error('Page move failed: no user with email address {0!s}'.format(
+                      email))
         return
 
     try:
@@ -159,9 +158,9 @@ def move_page(locale, slug, new_slug, email):
         message = """
             Page move failed.
 
-            Move was requested for document with slug %(slug)s in locale
-            %(locale)s, but no such document exists.
-        """ % {'slug': slug, 'locale': locale}
+            Move was requested for document with slug {slug!s} in locale
+            {locale!s}, but no such document exists.
+        """.format(**{'slug': slug, 'locale': locale})
         logging.error(message)
         send_mail('Page move failed',
                   textwrap.dedent(message),
@@ -177,13 +176,13 @@ def move_page(locale, slug, new_slug, email):
         message = """
             Page move failed.
 
-            Move was requested for document with slug %(slug)s in locale
-            %(locale)s, but could not be completed.
+            Move was requested for document with slug {slug!s} in locale
+            {locale!s}, but could not be completed.
 
             Diagnostic info:
 
-            %(message)s
-        """ % {'slug': slug, 'locale': locale, 'message': e.message}
+            {message!s}
+        """.format(**{'slug': slug, 'locale': locale, 'message': e.message})
         logging.error(message)
         send_mail('Page move failed',
                   textwrap.dedent(message),
@@ -196,11 +195,11 @@ def move_page(locale, slug, new_slug, email):
         message = """
             Page move failed.
 
-            Move was requested for document with slug %(slug)s in locale %(locale)s,
+            Move was requested for document with slug {slug!s} in locale {locale!s},
             but could not be completed.
 
-            %(info)s
-        """ % {'slug': slug, 'locale': locale, 'info': e}
+            {info!s}
+        """.format(**{'slug': slug, 'locale': locale, 'info': e})
         logging.error(message)
         send_mail('Page move failed',
                   textwrap.dedent(message),
@@ -223,11 +222,11 @@ def move_page(locale, slug, new_slug, email):
     message = """
         Page move completed.
 
-        The move requested for the document with slug %(slug)s in locale
-        %(locale)s, and all its children, has been completed.
+        The move requested for the document with slug {slug!s} in locale
+        {locale!s}, and all its children, has been completed.
 
-        You can now view this document at its new location: %(full_url)s.
-    """ % {'slug': slug, 'locale': locale, 'full_url': full_url}
+        You can now view this document at its new location: {full_url!s}.
+    """.format(**{'slug': slug, 'locale': locale, 'full_url': full_url})
 
     send_mail(subject,
               textwrap.dedent(message),
@@ -287,8 +286,8 @@ def send_first_edit_email(revision_pk):
     """ Make an 'edited' notification email for first-time editors """
     revision = Revision.objects.get(pk=revision_pk)
     user, doc = revision.creator, revision.document
-    subject = (u"[MDN] %(user)s made their first edit, to: %(doc)s" %
-               {'user': user.username, 'doc': doc.title})
+    subject = (u"[MDN] {user!s} made their first edit, to: {doc!s}".format(**
+               {'user': user.username, 'doc': doc.title}))
     message = render_to_string('wiki/email/edited.ltxt',
                                context_dict(revision))
     doc_url = absolutify(doc.get_absolute_url())
@@ -317,7 +316,7 @@ def build_locale_sitemap(locale):
     build.
     """
     now = datetime.utcnow()
-    timestamp = '%s+00:00' % now.replace(microsecond=0).isoformat()
+    timestamp = '{0!s}+00:00'.format(now.replace(microsecond=0).isoformat())
 
     directory = os.path.join(settings.MEDIA_ROOT, 'sitemaps', locale)
     if not os.path.isdir(directory):
@@ -336,7 +335,7 @@ def build_locale_sitemap(locale):
             if page == 1:
                 name = 'sitemap.xml'
             else:
-                name = 'sitemap_%s.xml' % page
+                name = 'sitemap_{0!s}.xml'.format(page)
             names.append(name)
 
             rendered = smart_str(render_to_string('wiki/sitemap.xml',
@@ -361,7 +360,7 @@ def build_index_sitemap(results):
         if result is not None:
             locale, names, timestamp = result
             for name in names:
-                sitemap_url = absolutify('/sitemaps/%s/%s' % (locale, name))
+                sitemap_url = absolutify('/sitemaps/{0!s}/{1!s}'.format(locale, name))
                 sitemap_parts.append(SITEMAP_ELEMENT % (sitemap_url, timestamp))
 
     sitemap_parts.append(SITEMAP_END)

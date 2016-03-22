@@ -37,7 +37,7 @@ def email(save=False, **kwargs):
     if 'user' not in kwargs:
         kwargs['user'] = user(save=True)
     if 'email' not in kwargs:
-        kwargs['email'] = '%s@%s.com' % (get_random_string(),
+        kwargs['email'] = '{0!s}@{1!s}.com'.format(get_random_string(),
                                          get_random_string())
     email = EmailAddress(**kwargs)
     if save:

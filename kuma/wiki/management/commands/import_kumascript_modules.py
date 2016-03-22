@@ -50,7 +50,7 @@ class Command(BaseCommand):
 
         print "Loaded docs:"
         for slug in loaded_docs:
-            print "%s" % slug
+            print "{0!s}".format(slug)
         print "\nSkipped docs that were already loaded:"
         for slug in skipped_docs:
-            print "%s" % slug
+            print "{0!s}".format(slug)

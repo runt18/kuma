@@ -10,7 +10,7 @@ from kuma.core.tests import ok_
 from .models import HumansTXT, Human
 
 APP_DIR = dirname(__file__)
-CONTRIBUTORS_JSON = "%s/fixtures/contributors.json" % APP_DIR
+CONTRIBUTORS_JSON = "{0!s}/fixtures/contributors.json".format(APP_DIR)
 
 
 class HumansTest(TestCase):
@@ -44,10 +44,10 @@ class HumansTest(TestCase):
         assert human.name == "chengwang"
 
     def test_write_to_file(self):
-        if not isdir("%s/tmp/" % APP_DIR):
-            makedirs("%s/tmp/" % APP_DIR)
+        if not isdir("{0!s}/tmp/".format(APP_DIR)):
+            makedirs("{0!s}/tmp/".format(APP_DIR))
 
-        target = open("%s/tmp/humans.txt" % APP_DIR, 'w')
+        target = open("{0!s}/tmp/humans.txt".format(APP_DIR), 'w')
         human1 = Human()
         human1.name = "joe"
         human1.website = "http://example.com"
@@ -62,12 +62,12 @@ class HumansTest(TestCase):
         ht = HumansTXT()
         ht.write_to_file(humans, target, "Banner Message", "Developer")
 
-        ok_(True, exists("%s/tmp/humans.txt" % APP_DIR))
+        ok_(True, exists("{0!s}/tmp/humans.txt".format(APP_DIR)))
 
         message = False
         name = False
 
-        for line in fileinput.input("%s/tmp/humans.txt" % APP_DIR):
+        for line in fileinput.input("{0!s}/tmp/humans.txt".format(APP_DIR)):
             if line == "Banner Message":
                 message = True
             if line == "joe":

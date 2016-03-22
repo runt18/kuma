@@ -73,4 +73,4 @@ class NamespacedTaggableManagerTest(TestCase):
         tags = ['foo', 'bar', 'baz']
         apple.tags.add_ns('a:', *tags)
 
-        self.assert_tags_equal(apple.tags.all(), ['a:%s' % t for t in tags])
+        self.assert_tags_equal(apple.tags.all(), ['a:{0!s}'.format(t) for t in tags])

@@ -43,8 +43,7 @@ class Command(BaseCommand):
             # Give some indication of progress, occasionally
             doc_cnt += 1
             if (doc_cnt % 5000) == 0:
-                logging.info("\t(%s / %s)" %
-                             (doc_cnt, doc_total))
+                logging.info("\t({0!s} / {1!s})".format(doc_cnt, doc_total))
 
             url = doc.get_absolute_url()
             if 'class="noinclude"' in doc.html and not doc.is_template:
@@ -64,12 +63,12 @@ class Command(BaseCommand):
 
         # Now, prefetch all the documents flagged in need in the previous loop.
         pre_total, pre_cnt = len(to_prefetch), 0
-        logging.info("Prefetching %s documents..." % (len(to_prefetch)))
+        logging.info("Prefetching {0!s} documents...".format((len(to_prefetch))))
         for url in to_prefetch:
             full_url = urlparse.urljoin(options['baseurl'], url)
             try:
                 pre_cnt += 1
-                logging.info("\t(%s/%s) %s" % (pre_cnt, pre_total, full_url))
+                logging.info("\t({0!s}/{1!s}) {2!s}".format(pre_cnt, pre_total, full_url))
                 requests.get(full_url)
             except Exception as e:
-                logging.error("\t\tFAILED: %s; %s" % (full_url, e))
+                logging.error("\t\tFAILED: {0!s}; {1!s}".format(full_url, e))

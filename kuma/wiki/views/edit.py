@@ -174,8 +174,8 @@ def edit(request, document_slug, document_locale, revision_id=None):
                         response = HttpResponse(textwrap.dedent("""
                             <span id="iframe-response"
                                   data-status="OK"
-                                  data-current-revision="%s">OK</span>
-                        """ % doc.current_revision.id))
+                                  data-current-revision="{0!s}">OK</span>
+                        """.format(doc.current_revision.id)))
                         response['X-Frame-Options'] = 'SAMEORIGIN'
                         return response
 
@@ -225,8 +225,8 @@ def edit(request, document_slug, document_locale, revision_id=None):
                         response = HttpResponse("""
                             <span id="iframe-response"
                                   data-status="OK"
-                                  data-current-revision="%s">OK</span>
-                        """ % doc.current_revision.id)
+                                  data-current-revision="{0!s}">OK</span>
+                        """.format(doc.current_revision.id))
                         response['X-Frame-Options'] = 'SAMEORIGIN'
                         return response
 
@@ -260,11 +260,11 @@ def edit(request, document_slug, document_locale, revision_id=None):
                             # content API, constrain to that section.
                             params['section'] = section_id
                     if params:
-                        url = '%s?%s' % (url, urlencode(params))
+                        url = '{0!s}?{1!s}'.format(url, urlencode(params))
                     if not is_raw and section_id:
                         # If a section was edited, jump to the section anchor
                         # if we're not getting raw content.
-                        url = '%s#%s' % (url, section_id)
+                        url = '{0!s}#{1!s}'.format(url, section_id)
 
                     return redirect(url)
 

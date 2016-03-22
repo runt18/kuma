@@ -42,7 +42,7 @@ class DocumentZoneURLRemapsJob(KumaJob):
         zones = (DocumentZone.objects.filter(document__locale=locale,
                                              url_root__isnull=False)
                                      .exclude(url_root=''))
-        remaps = [('/docs/%s' % zone.document.slug, '/%s' % zone.url_root)
+        remaps = [('/docs/{0!s}'.format(zone.document.slug), '/{0!s}'.format(zone.url_root))
                   for zone in zones]
         return remaps
 
@@ -83,7 +83,7 @@ class DocumentContributorsJob(KumaJob):
         # then return the ordered results given the ID list, MySQL only syntax
         select = collections.OrderedDict([
             ('ordered_ids',
-             'FIELD(id,%s)' % ','.join(map(str, recent_creator_ids))),
+             'FIELD(id,{0!s})'.format(','.join(map(str, recent_creator_ids)))),
         ])
         contributors = list(User.objects.filter(id__in=list(recent_creator_ids),
                                                 is_active=True)

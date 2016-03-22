@@ -20,7 +20,7 @@ class TestIndexes(ElasticTestCase):
 
     def test_get_current(self):
         eq_(Index.objects.get_current().prefixed_name,
-            '%s-main_index' % settings.ES_INDEX_PREFIX)
+            '{0!s}-main_index'.format(settings.ES_INDEX_PREFIX))
 
     def _reload(self, index):
         return Index.objects.get(pk=index.pk)

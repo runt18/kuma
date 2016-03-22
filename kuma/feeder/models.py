@@ -100,7 +100,7 @@ class Entry(models.Model):
         verbose_name_plural = 'Entries'
 
     def __unicode__(self):
-        return '%s: %s' % (self.feed.shortname, self.guid)
+        return '{0!s}: {1!s}'.format(self.feed.shortname, self.guid)
 
     @cached_property
     def parsed(self):

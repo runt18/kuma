@@ -99,11 +99,11 @@ class TestUserEditForm(KumaTestCase):
         edit_user = user(save=True)
         for proto, expected_valid in protos:
             for name, site in sites:
-                url = '%s%s' % (proto, site)
+                url = '{0!s}{1!s}'.format(proto, site)
                 data = {
                     'username': edit_user.username,
                     'email': 'lorchard@mozilla.com',
-                    '%s_url' % name: url,
+                    '{0!s}_url'.format(name): url,
                 }
                 form = UserEditForm(data, instance=edit_user)
                 result_valid = form.is_valid()

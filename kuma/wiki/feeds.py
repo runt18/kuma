@@ -135,7 +135,7 @@ class DocumentJSONFeedGenerator(SyndicationFeed):
         data = items_out
 
         if callback:
-            outfile.write('%s(' % callback)
+            outfile.write('{0!s}('.format(callback))
         outfile.write(json.dumps(data, default=self._encode_complex))
         if callback:
             outfile.write(')')
@@ -152,7 +152,7 @@ class DocumentsRecentFeed(DocumentsFeed):
         super(DocumentsRecentFeed, self).get_object(request, format)
         self.tag = tag
         if tag:
-            self.title = _('MDN recent changes to documents tagged %s' % tag)
+            self.title = _('MDN recent changes to documents tagged {0!s}'.format(tag))
             self.link = self.request.build_absolute_uri(
                 reverse('wiki.tag', args=(tag,)))
         else:
@@ -186,7 +186,7 @@ class DocumentsReviewFeed(DocumentsRecentFeed):
         super(DocumentsReviewFeed, self).get_object(request, format)
         self.subtitle = None
         if tag:
-            self.title = _('MDN documents for %s review' % tag)
+            self.title = _('MDN documents for {0!s} review'.format(tag))
             self.link = self.request.build_absolute_uri(
                 reverse('wiki.list_review_tag', args=(tag,)))
         else:
@@ -220,8 +220,8 @@ class DocumentsUpdatedTranslationParentFeed(DocumentsFeed):
         super(DocumentsUpdatedTranslationParentFeed,
               self).get_object(request, format)
         self.subtitle = None
-        self.title = _("MDN '%s' translations in need of update" %
-                       self.locale)
+        self.title = _("MDN '{0!s}' translations in need of update".format(
+                       self.locale))
         # TODO: Need an HTML / dashboard version of this feed
         self.link = self.request.build_absolute_uri(
             reverse('wiki.all_documents'))
@@ -282,7 +282,7 @@ class RevisionsFeed(DocumentsFeed):
                                                   'document'))
 
     def item_title(self, item):
-        return '%s (%s)' % (item.document.slug, item.document.locale)
+        return '{0!s} ({1!s})'.format(item.document.slug, item.document.locale)
 
     def item_description(self, item):
         # TODO: put this in a jinja template if django syndication will let us
@@ -292,10 +292,10 @@ class RevisionsFeed(DocumentsFeed):
         else:
             action = u'Edited'
 
-        by = u'<h3>%s by:</h3><p>%s</p>' % (action, item.creator.username)
+        by = u'<h3>{0!s} by:</h3><p>{1!s}</p>'.format(action, item.creator.username)
 
         if item.comment:
-            comment = u'<h3>Comment:</h3><p>%s</p>' % item.comment
+            comment = u'<h3>Comment:</h3><p>{0!s}</p>'.format(item.comment)
         else:
             comment = u''
 
@@ -310,13 +310,13 @@ class RevisionsFeed(DocumentsFeed):
                 table = tag_diff_table(u','.join(prev_review_tags),
                                        u','.join(curr_review_tags),
                                        previous.id, item.id)
-                review_diff = u'<h3>Review changes:</h3>%s' % table
+                review_diff = u'<h3>Review changes:</h3>{0!s}'.format(table)
                 review_diff = colorize_diff(review_diff)
 
             if previous.tags != item.tags:
                 table = tag_diff_table(previous.tags, item.tags,
                                        previous.id, item.id)
-                tag_diff = u'<h3>Tag changes:</h3>%s' % table
+                tag_diff = u'<h3>Tag changes:</h3>{0!s}'.format(table)
                 tag_diff = colorize_diff(tag_diff)
 
         previous_content = ''
@@ -364,7 +364,7 @@ class RevisionsFeed(DocumentsFeed):
             _('History')
         )
         links_table = u'<table border="0" width="80%">'
-        links_table = links_table + u'<tr>%s%s%s%s</tr>' % (view_cell,
+        links_table = links_table + u'<tr>{0!s}{1!s}{2!s}{3!s}</tr>'.format(view_cell,
                                                             edit_cell,
                                                             compare_cell,
                                                             history_cell)

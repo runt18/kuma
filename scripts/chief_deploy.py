@@ -36,7 +36,7 @@ os.environ['PATH'] = os.pathsep.join([
 def update_code(ctx, tag):
     with ctx.lcd(settings.SRC_DIR):
         ctx.local("git fetch")
-        ctx.local("git checkout -f %s" % tag)
+        ctx.local("git checkout -f {0!s}".format(tag))
         ctx.local("git submodule sync")
         ctx.local("git submodule update --init --recursive")
 
@@ -87,7 +87,7 @@ def deploy_kumascript(ctx):
 @hostgroups(settings.WEB_HOSTGROUP, remote_kwargs={'ssh_key': settings.SSH_KEY})
 def prime_app(ctx):
     for http_port in range(80, 82):
-        ctx.remote("for i in {1..10}; do curl -so /dev/null -H 'Host: %s' -I http://localhost:%s/ & sleep 1; done" % (settings.REMOTE_HOSTNAME, http_port))
+        ctx.remote("for i in {{1..10}}; do curl -so /dev/null -H 'Host: {0!s}' -I http://localhost:{1!s}/ & sleep 1; done".format(settings.REMOTE_HOSTNAME, http_port))
 
 
 @hostgroups(settings.CELERY_HOSTGROUP, remote_kwargs={'ssh_key': settings.SSH_KEY})
@@ -104,7 +104,7 @@ def ping_newrelic(ctx):
     f = open(settings.SRC_DIR + "/media/revision.txt", "r")
     tag = f.read()
     f.close()
-    ctx.local('curl --silent -H "x-api-key:%s" -d "deployment[app_name]=%s" -d "deployment[revision]=%s" -d "deployment[user]=Chief" https://rpm.newrelic.com/deployments.xml' % (settings.NEWRELIC_API_KEY, settings.REMOTE_HOSTNAME, tag))
+    ctx.local('curl --silent -H "x-api-key:{0!s}" -d "deployment[app_name]={1!s}" -d "deployment[revision]={2!s}" -d "deployment[user]=Chief" https://rpm.newrelic.com/deployments.xml'.format(settings.NEWRELIC_API_KEY, settings.REMOTE_HOSTNAME, tag))
 
 
 @task
@@ -125,22 +125,22 @@ def setup_dependencies(ctx):
         # Dearly beloved. We gather here to destroy this virtualenv in the
         # hopes that out of the ashes will rise another new and beautiful
         # virtualenv with no mistakes in it.
-        ctx.local('rm -rf %s' % settings.VENV_DIR)
-        ctx.local('virtualenv-2.7 --no-site-packages %s' % settings.VENV_DIR)
+        ctx.local('rm -rf {0!s}'.format(settings.VENV_DIR))
+        ctx.local('virtualenv-2.7 --no-site-packages {0!s}'.format(settings.VENV_DIR))
 
         # Activate virtualenv to append to the correct path to $PATH.
         activate_env = os.path.join(VENV_BIN, 'activate_this.py')
         execfile(activate_env, dict(__file__=activate_env))
 
         pip = os.path.join(VENV_BIN, 'pip')
-        ctx.local('%s install --upgrade "pip==%s"' % (pip, PIP_VERSION))
+        ctx.local('{0!s} install --upgrade "pip=={1!s}"'.format(pip, PIP_VERSION))
         ctx.local('pip --version')
-        ctx.local('%s install -r requirements/default.txt' % pip)
+        ctx.local('{0!s} install -r requirements/default.txt'.format(pip))
         # Make the virtualenv relocatable
-        ctx.local('virtualenv-2.7 --relocatable %s' % settings.VENV_DIR)
+        ctx.local('virtualenv-2.7 --relocatable {0!s}'.format(settings.VENV_DIR))
 
         # Fix lib64 symlink to be relative instead of absolute.
-        ctx.local('rm -f %s' % os.path.join(settings.VENV_DIR, 'lib64'))
+        ctx.local('rm -f {0!s}'.format(os.path.join(settings.VENV_DIR, 'lib64')))
         with ctx.lcd(settings.VENV_DIR):
             ctx.local('ln -s lib lib64')
 

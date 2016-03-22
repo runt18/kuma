@@ -12,7 +12,7 @@ class KumaJob(Job):
         key = super(KumaJob, self).key(*args, **kwargs)
         if self.version is None:
             return key
-        return '%s#%s' % (key, self.version)
+        return '{0!s}#{1!s}'.format(key, self.version)
 
 
 class IPBanJob(KumaJob):

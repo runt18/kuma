@@ -223,8 +223,8 @@ class ViewTests(ElasticTestCase):
         response = self.client.get('/en-US/search')
         eq_(response.status_code, 200)
         self.assertContains(response,
-                            ('Search index: %s' %
-                             Index.objects.get_current().name))
+                            ('Search index: {0!s}'.format(
+                             Index.objects.get_current().name)))
 
     def test_score(self):
         response = self.client.get('/en-US/search.json')

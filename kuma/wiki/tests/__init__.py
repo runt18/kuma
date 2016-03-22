@@ -153,7 +153,7 @@ def create_document_editor_user():
     """Creates a user empowered with document editing"""
     perms = []
     for action in ('add', 'change', 'delete', 'view', 'restore'):
-        perms.append(Permission.objects.get(codename='%s_document' % action))
+        perms.append(Permission.objects.get(codename='{0!s}_document'.format(action)))
 
     group, group_created = Group.objects.get_or_create(name='editor')
     if group_created:
@@ -175,7 +175,7 @@ def create_document_editor_user():
 
 def create_template_test_users():
     perms = dict(
-        (x, [Permission.objects.get(codename='%s_template_document' % x)])
+        (x, [Permission.objects.get(codename='{0!s}_template_document'.format(x))])
         for x in ('add', 'change',)
     )
     perms['all'] = perms['add'] + perms['change']
@@ -183,7 +183,7 @@ def create_template_test_users():
     groups = {}
     for x in ('add', 'change', 'all'):
         group, created = Group.objects.get_or_create(
-            name='templaters_%s' % x)
+            name='templaters_{0!s}'.format(x))
         if created:
             group.permissions = perms[x]
             group.save()
@@ -193,7 +193,7 @@ def create_template_test_users():
     User = get_user_model()
     for x in ('none', 'add', 'change', 'all'):
         user, created = User.objects.get_or_create(
-            username='user_%s' % x,
+            username='user_{0!s}'.format(x),
             defaults=dict(email='user_%s@example.com',
                           is_active=True, is_staff=False, is_superuser=False))
         if created:

@@ -70,8 +70,8 @@ def revisions_unified_diff(from_revision, to_revision):
     if from_revision is None or to_revision is None:
         return "Diff is unavailable."
 
-    fromfile = '[%s] #%s' % (from_revision.document.locale, from_revision.id)
-    tofile = '[%s] #%s' % (to_revision.document.locale, to_revision.id)
+    fromfile = '[{0!s}] #{1!s}'.format(from_revision.document.locale, from_revision.id)
+    tofile = '[{0!s}] #{1!s}'.format(to_revision.document.locale, to_revision.id)
 
     tidy_from = from_revision.get_tidied_content()
     tidy_to = to_revision.get_tidied_content()
@@ -104,7 +104,7 @@ def diff_table(content_from, content_to, prev_id, curr_id, tidy=False):
     except RuntimeError:
         # some diffs hit a max recursion error
         message = ugettext(u'There was an error generating the content.')
-        diff = '<div class="warning"><p>%s</p></div>' % message
+        diff = '<div class="warning"><p>{0!s}</p></div>'.format(message)
     return jinja2.Markup(diff)
 
 
@@ -206,7 +206,7 @@ def document_zone_management_links(user, document):
     # zone but the document is not itself the root (ie. to add sub-zones).
     if ((not zone or zone.document != document) and
             user.has_perm('wiki.add_documentzone')):
-        links['add'] = '%s?document=%s' % (
+        links['add'] = '{0!s}?document={1!s}'.format(
             reverse('admin:wiki_documentzone_add'), document.id)
 
     # Enable "change" link if there's a zone, and the user has permission.

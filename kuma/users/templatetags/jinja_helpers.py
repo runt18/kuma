@@ -41,7 +41,7 @@ def ban_link(context, ban_user, banner_user):
                     '<i aria-hidden="true" class="icon-ban"></i></a>'
                     % (url, title, ugettext('Banned')))
         else:
-            url = '%s?user=%s&by=%s' % (
+            url = '{0!s}?user={1!s}&by={2!s}'.format(
                 reverse('admin:users_userban_add'), ban_user.id,
                 banner_user.id)
             link = ('<a href="%s" class="button negative ban-link">%s'
@@ -64,12 +64,12 @@ def admin_link(user):
 @library.filter
 def public_email(email):
     """Email address -> publicly displayable email."""
-    return Markup('<span class="email">%s</span>' % unicode_to_html(email))
+    return Markup('<span class="email">{0!s}</span>'.format(unicode_to_html(email)))
 
 
 def unicode_to_html(text):
     """Turns all unicode into html entities, e.g. &#69; -> E."""
-    return ''.join([u'&#%s;' % ord(i) for i in text])
+    return ''.join([u'&#{0!s};'.format(ord(i)) for i in text])
 
 
 @library.global_function

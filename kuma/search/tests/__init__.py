@@ -45,7 +45,7 @@ class ElasticTestCase(UserTestCase):
             return
 
         cls._old_es_index_prefix = settings.ES_INDEX_PREFIX
-        settings.ES_INDEX_PREFIX = 'test-%s' % settings.ES_INDEX_PREFIX
+        settings.ES_INDEX_PREFIX = 'test-{0!s}'.format(settings.ES_INDEX_PREFIX)
         cls._old_es_live_index = settings.ES_LIVE_INDEX
         settings.ES_LIVE_INDEX = True
 

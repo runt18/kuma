@@ -263,8 +263,8 @@ class AllauthPersonaTestCase(UserTestCase):
                                locale=settings.WIKI_DEFAULT_LANGUAGE)
         response = self.client.get(all_docs_url, follow=True)
         parsed = pq(response.content)
-        request_info = '{"siteName": "%(siteName)s", "siteLogo": "%(siteLogo)s"}' % \
-                       settings.SOCIALACCOUNT_PROVIDERS['persona']['REQUEST_PARAMETERS']
+        request_info = '{{"siteName": "{siteName!s}", "siteLogo": "{siteLogo!s}"}}'.format(** \
+                       settings.SOCIALACCOUNT_PROVIDERS['persona']['REQUEST_PARAMETERS'])
         stub_attrs = (
             ('data-csrf-token-url', reverse('persona_csrf_token')),
             ('data-request', request_info),

@@ -119,7 +119,7 @@ def _get_seo_parent_title(slug_dict, document_locale):
         try:
             seo_root_doc = Document.objects.get(locale=document_locale,
                                                 slug=slug_dict['seo_root'])
-            return u' - %s' % seo_root_doc.title
+            return u' - {0!s}'.format(seo_root_doc.title)
         except Document.DoesNotExist:
             pass
     return ''

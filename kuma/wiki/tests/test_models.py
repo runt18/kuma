@@ -39,7 +39,7 @@ def _objects_eq(manager, list_):
 def redirect_rev(title, redirect_to):
     return revision(
         document=document(title=title, save=True),
-        content='REDIRECT [[%s]]' % redirect_to,
+        content='REDIRECT [[{0!s}]]'.format(redirect_to),
         is_approved=True,
         save=True)
 
@@ -114,7 +114,7 @@ class DocumentTests(UserTestCase):
 
         assert not d.is_template
 
-        d.slug = '%stest' % TEMPLATE_TITLE_PREFIX
+        d.slug = '{0!s}test'.format(TEMPLATE_TITLE_PREFIX)
         d.save()
 
         assert d.is_template
@@ -252,7 +252,7 @@ class DocumentTests(UserTestCase):
 
     @pytest.mark.redirect
     def test_redirect_url_allows_site_url(self):
-        href = "%s/en-US/Mozilla" % settings.SITE_URL
+        href = "{0!s}/en-US/Mozilla".format(settings.SITE_URL)
         title = "Mozilla"
         html = REDIRECT_CONTENT % {'href': href, 'title': title}
         d = document(is_redirect=True, html=html)
@@ -324,17 +324,17 @@ class PermissionTests(KumaTestCase):
                     if is_add:
                         eq_(expected,
                             Document.objects.allows_add_by(trial_user, slug),
-                            'User %s %s able to create %s' % (
+                            'User {0!s} {1!s} able to create {2!s}'.format(
                                 trial_user, msg[expected], slug))
                     else:
                         doc = document(slug=slug, title=slug)
                         eq_(expected,
                             doc.allows_revision_by(trial_user),
-                            'User %s %s able to revise %s' % (
+                            'User {0!s} {1!s} able to revise {2!s}'.format(
                                 trial_user, msg[expected], slug))
                         eq_(expected,
                             doc.allows_editing_by(trial_user),
-                            'User %s %s able to edit %s' % (
+                            'User {0!s} {1!s} able to edit {2!s}'.format(
                                 trial_user, msg[expected], slug))
 
 
@@ -469,12 +469,12 @@ class DocumentTestsWithFixture(UserTestCase):
         doc_src = u"""
             <p>This is a page. Deal with it.</p>
             <ul id="s2" class="code-sample">
-                <li><pre class="brush: html">%s</pre></li>
-                <li><pre class="brush: css">%s</pre></li>
-                <li><pre class="brush: js">%s</pre></li>
+                <li><pre class="brush: html">{0!s}</pre></li>
+                <li><pre class="brush: css">{1!s}</pre></li>
+                <li><pre class="brush: js">{2!s}</pre></li>
             </ul>
             <p>More content shows up here.</p>
-        """ % (escape(sample_html), escape(sample_css), escape(sample_js))
+        """.format(escape(sample_html), escape(sample_css), escape(sample_js))
 
         d1, r1 = doc_rev(doc_src)
         result = d1.extract_code_sample('s2')
@@ -533,7 +533,7 @@ class RevisionTests(UserTestCase):
         d, _ = doc_rev('Replace document html')
 
         assert 'Replace document html' in d.html, \
-               '"Replace document html" not in %s' % d.html
+               '"Replace document html" not in {0!s}'.format(d.html)
 
         # Creating another approved revision replaces it again
         r = revision(document=d, content='Replace html again',
@@ -541,20 +541,20 @@ class RevisionTests(UserTestCase):
         r.save()
 
         assert 'Replace html again' in d.html, \
-               '"Replace html again" not in %s' % d.html
+               '"Replace html again" not in {0!s}'.format(d.html)
 
     def test_unapproved_revision_not_updates_html(self):
         """Creating an unapproved revision does not update document.html"""
         d, _ = doc_rev('Here to stay')
 
-        assert 'Here to stay' in d.html, '"Here to stay" not in %s' % d.html
+        assert 'Here to stay' in d.html, '"Here to stay" not in {0!s}'.format(d.html)
 
         # Creating another approved revision keeps initial content
         r = revision(document=d, content='Fail to replace html',
                      is_approved=False)
         r.save()
 
-        assert 'Here to stay' in d.html, '"Here to stay" not in %s' % d.html
+        assert 'Here to stay' in d.html, '"Here to stay" not in {0!s}'.format(d.html)
 
     def test_revision_unicode(self):
         """Revision containing unicode characters is saved successfully."""
@@ -1565,7 +1565,7 @@ class PageMoveTests(UserTestCase):
     @pytest.mark.move
     def test_move_special(self):
         root_slug = 'User:foo'
-        child_slug = '%s/child' % root_slug
+        child_slug = '{0!s}/child'.format(root_slug)
 
         new_root_slug = 'User:foobar'
 
@@ -1609,7 +1609,7 @@ class PageMoveTests(UserTestCase):
                                           slug=new_root_slug)
         eq_(original_root_id, moved_root.id)
         moved_child = Document.objects.get(locale=special_child.locale,
-                                           slug='%s/child' % new_root_slug)
+                                           slug='{0!s}/child'.format(new_root_slug))
         eq_(original_child_id, moved_child.id)
 
         # Second move, back to original slug.
@@ -1620,7 +1620,7 @@ class PageMoveTests(UserTestCase):
                                                     slug=new_root_slug)
         ok_(root_second_redirect.is_redirect)
         child_second_redirect = Document.objects.get(locale=special_child.locale,
-                                                     slug='%s/child' % new_root_slug)
+                                                     slug='{0!s}/child'.format(new_root_slug))
         ok_(child_second_redirect.is_redirect)
 
         # The documents at the original URLs aren't redirects anymore.
@@ -1679,8 +1679,8 @@ class PageMoveTests(UserTestCase):
             child_doc._move_tree('test-move-error-messaging/moved')
         except PageMoveError as e:
             err_strings = [
-                'with id %s' % grandchild_doc.id,
-                'https://developer.mozilla.org/%s/docs/%s' % (grandchild_doc.locale,
+                'with id {0!s}'.format(grandchild_doc.id),
+                'https://developer.mozilla.org/{0!s}/docs/{1!s}'.format(grandchild_doc.locale,
                                                               grandchild_doc.slug),
                 "Exception type: <type 'exceptions.Exception'>",
                 'Exception message: Requested move would overwrite a non-redirect page.',

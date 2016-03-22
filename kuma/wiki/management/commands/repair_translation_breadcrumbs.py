@@ -21,8 +21,8 @@ class Command(BaseCommand):
                 .exclude(parent__exact=None)
                 .filter(parent_topic__exact=None))
 
-        logging.debug("Attempting breadcrumb repair for %s translations" %
-                      (docs.count()))
+        logging.debug("Attempting breadcrumb repair for {0!s} translations".format(
+                      (docs.count())))
 
         for doc in docs:
             doc.acquire_translated_topic_parent()
@@ -30,11 +30,11 @@ class Command(BaseCommand):
                 # Some translated pages really don't end up needing a
                 # breadcrumb repair, but we don't really know until we try and
                 # come up empty handed.
-                logging.debug(u'\t(root) -> /%s/docs/%s' % (
+                logging.debug(u'\t(root) -> /{0!s}/docs/{1!s}'.format(
                     doc.locale, doc.slug))
             else:
                 # We got a new parent topic, so save and report the result
                 doc.save()
-                logging.debug(u'\t/%s/docs/%s -> /%s/docs/%s' % (
+                logging.debug(u'\t/{0!s}/docs/{1!s} -> /{2!s}/docs/{3!s}'.format(
                     doc.parent_topic.locale, doc.parent_topic.slug,
                     doc.locale, doc.slug))
