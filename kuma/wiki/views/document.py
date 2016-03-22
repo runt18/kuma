@@ -572,8 +572,8 @@ def document(request, document_slug, document_locale):
         else:
             # If a Document is not found, we may 404 immediately based on
             # request parameters.
-            if (any([request.GET.get(param, None)
-                     for param in ('raw', 'include', 'nocreate')]) or
+            if (any(request.GET.get(param, None)
+                     for param in ('raw', 'include', 'nocreate')) or
                     not request.user.is_authenticated()):
                 raise Http404
 

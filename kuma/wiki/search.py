@@ -263,8 +263,8 @@ class WikiDocumentType(document.DocType):
         return (not obj.is_template and
                 not obj.is_redirect and
                 not obj.deleted and
-                not any([exclude in obj.slug
-                         for exclude in cls.exclude_slugs]))
+                not any( exclude in obj.slug
+                         for exclude in cls.exclude_slugs))
 
     def get_excerpt(self):
         highlighted = getattr(self.meta, 'highlight', None)
